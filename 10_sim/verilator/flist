@@ -1,0 +1,19 @@
+-I./../00_src/
+-y ./../00_src/
+./../00_src/adder.sv
+./../00_src/flopenf.sv
+./../00_src/flopenr.sv
+./../00_src/flopf.sv
+./../00_src/flopr.sv
+./../00_src/instr_mem.sv
+./../00_src/mux2.sv
+./../00_src/mux3.sv
+./../00_src/reg_file.sv
+./../00_src/top.sv
+
+# ./../01_bench/tlib.svh
+# ./../01_bench/stimuli.sv
+# ./../01_bench/scoreboard.sv
+# ./../01_bench/tbench.sv
+./conf.vlt
+-top tbench
