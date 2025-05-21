@@ -44,7 +44,8 @@ logic   [31:0]  pcF0, PCPlus4F;
 
 // Decode Stage (D)
 logic   [31:0]  pcD, ImmExtD, PCPlus4D;
-logic   [4:0]   Read1D, Read2D, RdD;
+logic   [31:0]  Read1D, Read2D;
+logic   [4:0]   RdD;
 
 // Execute Stage (E)
 logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;

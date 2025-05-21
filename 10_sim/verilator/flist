@@ -1,5 +1,4 @@
--I./../00_src/
--y ./../00_src/
+-I./../../00_src/
 ./../../00_src/adder.sv
 ./../../00_src/aludec.sv
 ./../../00_src/controller.sv
@@ -17,9 +16,7 @@
 ./../../00_src/reg_file.sv
 ./../../00_src/top.sv
 
-./../../01_bench/tlib.svh
-./../../01_bench/stimuli.sv
-./../../01_bench/scoreboard.sv
-./../../01_bench/tbench.sv
+./../../01_bench/testbench.sv
 ./conf.vlt
--top tbench
+-top testbench
+

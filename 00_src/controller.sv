@@ -13,7 +13,7 @@ module controller
 );
 
 logic   [1:0]   ALUOp;
-logic           Branch;
+logic           BranchD;
 
 maindec md
 (
@@ -37,6 +37,6 @@ aludec ad
     .ALUControlD    (ALUControlD)
 );
 
-assign PCSrcE = (BranchE & ZeroE) | JumpE;
+assign PCSrcE = (BranchD & ZeroE) | JumpD;
 
 endmodule

@@ -18,7 +18,7 @@ module processor
 // From/To Controller signals/buses
 logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD; 
 logic   [2:0]   ALUControlD;
-logic   [1:0]   ResultSrcD, ImmSrcD;
+logic   [1:0]   ResultSrcD, ResultSrcE, ImmSrcD;
 logic   [31:0]  InstrD;
 logic           PCSrcE;
 logic           JumpE, BranchE, ZeroE;
@@ -57,7 +57,7 @@ controller ctrl
     .op             (InstrD[6:0]),
     .funct3         (InstrD[14:12]),
     .funct7b5       (InstrD[30]),
-    .ZeroD          (ZeroD),
+    .ZeroE          (ZeroE),
     .ResultSrcD     (ResultSrcD),
     .MemWriteD      (MemWriteD),
     .PCSrcE         (PCSrcE),

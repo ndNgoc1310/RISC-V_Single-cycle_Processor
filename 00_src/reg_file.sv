@@ -105,37 +105,37 @@ always_comb
 
 // Write Data
 // python: print("\n".join(["flopenr #(.N(32)) r_x%02d(.clk(clk), .rst(1'b0), .q(x%02d), .d(i_wr_dat), .en(i_wr_ens[%02d]));"%(i,i,i) for i in range(1,32)]))
-flop_r #(.N(32)) r_x01(.clk(clk), .rst(1'b0), .q(x01), .d(i_wr_dat), .en(i_wr_ens[01]));
-flop_r #(.N(32)) r_x02(.clk(clk), .rst(1'b0), .q(x02), .d(i_wr_dat), .en(i_wr_ens[02]));
-flop_r #(.N(32)) r_x03(.clk(clk), .rst(1'b0), .q(x03), .d(i_wr_dat), .en(i_wr_ens[03]));
-flop_r #(.N(32)) r_x04(.clk(clk), .rst(1'b0), .q(x04), .d(i_wr_dat), .en(i_wr_ens[04]));
-flop_r #(.N(32)) r_x05(.clk(clk), .rst(1'b0), .q(x05), .d(i_wr_dat), .en(i_wr_ens[05]));
-flop_r #(.N(32)) r_x06(.clk(clk), .rst(1'b0), .q(x06), .d(i_wr_dat), .en(i_wr_ens[06]));
-flop_r #(.N(32)) r_x07(.clk(clk), .rst(1'b0), .q(x07), .d(i_wr_dat), .en(i_wr_ens[07]));
-flop_r #(.N(32)) r_x08(.clk(clk), .rst(1'b0), .q(x08), .d(i_wr_dat), .en(i_wr_ens[08]));
-flop_r #(.N(32)) r_x09(.clk(clk), .rst(1'b0), .q(x09), .d(i_wr_dat), .en(i_wr_ens[09]));
-flop_r #(.N(32)) r_x10(.clk(clk), .rst(1'b0), .q(x10), .d(i_wr_dat), .en(i_wr_ens[10]));
-flop_r #(.N(32)) r_x11(.clk(clk), .rst(1'b0), .q(x11), .d(i_wr_dat), .en(i_wr_ens[11]));
-flop_r #(.N(32)) r_x12(.clk(clk), .rst(1'b0), .q(x12), .d(i_wr_dat), .en(i_wr_ens[12]));
-flop_r #(.N(32)) r_x13(.clk(clk), .rst(1'b0), .q(x13), .d(i_wr_dat), .en(i_wr_ens[13]));
-flop_r #(.N(32)) r_x14(.clk(clk), .rst(1'b0), .q(x14), .d(i_wr_dat), .en(i_wr_ens[14]));
-flop_r #(.N(32)) r_x15(.clk(clk), .rst(1'b0), .q(x15), .d(i_wr_dat), .en(i_wr_ens[15]));
-flop_r #(.N(32)) r_x16(.clk(clk), .rst(1'b0), .q(x16), .d(i_wr_dat), .en(i_wr_ens[16]));
-flop_r #(.N(32)) r_x17(.clk(clk), .rst(1'b0), .q(x17), .d(i_wr_dat), .en(i_wr_ens[17]));
-flop_r #(.N(32)) r_x18(.clk(clk), .rst(1'b0), .q(x18), .d(i_wr_dat), .en(i_wr_ens[18]));
-flop_r #(.N(32)) r_x19(.clk(clk), .rst(1'b0), .q(x19), .d(i_wr_dat), .en(i_wr_ens[19]));
-flop_r #(.N(32)) r_x20(.clk(clk), .rst(1'b0), .q(x20), .d(i_wr_dat), .en(i_wr_ens[20]));
-flop_r #(.N(32)) r_x21(.clk(clk), .rst(1'b0), .q(x21), .d(i_wr_dat), .en(i_wr_ens[21]));
-flop_r #(.N(32)) r_x22(.clk(clk), .rst(1'b0), .q(x22), .d(i_wr_dat), .en(i_wr_ens[22]));
-flop_r #(.N(32)) r_x23(.clk(clk), .rst(1'b0), .q(x23), .d(i_wr_dat), .en(i_wr_ens[23]));
-flop_r #(.N(32)) r_x24(.clk(clk), .rst(1'b0), .q(x24), .d(i_wr_dat), .en(i_wr_ens[24]));
-flop_r #(.N(32)) r_x25(.clk(clk), .rst(1'b0), .q(x25), .d(i_wr_dat), .en(i_wr_ens[25]));
-flop_r #(.N(32)) r_x26(.clk(clk), .rst(1'b0), .q(x26), .d(i_wr_dat), .en(i_wr_ens[26]));
-flop_r #(.N(32)) r_x27(.clk(clk), .rst(1'b0), .q(x27), .d(i_wr_dat), .en(i_wr_ens[27]));
-flop_r #(.N(32)) r_x28(.clk(clk), .rst(1'b0), .q(x28), .d(i_wr_dat), .en(i_wr_ens[28]));
-flop_r #(.N(32)) r_x29(.clk(clk), .rst(1'b0), .q(x29), .d(i_wr_dat), .en(i_wr_ens[29]));
-flop_r #(.N(32)) r_x30(.clk(clk), .rst(1'b0), .q(x30), .d(i_wr_dat), .en(i_wr_ens[30]));
-flop_r #(.N(32)) r_x31(.clk(clk), .rst(1'b0), .q(x31), .d(i_wr_dat), .en(i_wr_ens[31]));
+flop_r #(32) r_x01(.clk(clk), .rst(1'b0), .q(x01), .d(i_wr_dat), .en(i_wr_ens[01]), .clr(1'b0));
+flop_r #(32) r_x02(.clk(clk), .rst(1'b0), .q(x02), .d(i_wr_dat), .en(i_wr_ens[02]), .clr(1'b0));
+flop_r #(32) r_x03(.clk(clk), .rst(1'b0), .q(x03), .d(i_wr_dat), .en(i_wr_ens[03]), .clr(1'b0));
+flop_r #(32) r_x04(.clk(clk), .rst(1'b0), .q(x04), .d(i_wr_dat), .en(i_wr_ens[04]), .clr(1'b0));
+flop_r #(32) r_x05(.clk(clk), .rst(1'b0), .q(x05), .d(i_wr_dat), .en(i_wr_ens[05]), .clr(1'b0));
+flop_r #(32) r_x06(.clk(clk), .rst(1'b0), .q(x06), .d(i_wr_dat), .en(i_wr_ens[06]), .clr(1'b0));
+flop_r #(32) r_x07(.clk(clk), .rst(1'b0), .q(x07), .d(i_wr_dat), .en(i_wr_ens[07]), .clr(1'b0));
+flop_r #(32) r_x08(.clk(clk), .rst(1'b0), .q(x08), .d(i_wr_dat), .en(i_wr_ens[08]), .clr(1'b0));
+flop_r #(32) r_x09(.clk(clk), .rst(1'b0), .q(x09), .d(i_wr_dat), .en(i_wr_ens[09]), .clr(1'b0));
+flop_r #(32) r_x10(.clk(clk), .rst(1'b0), .q(x10), .d(i_wr_dat), .en(i_wr_ens[10]), .clr(1'b0));
+flop_r #(32) r_x11(.clk(clk), .rst(1'b0), .q(x11), .d(i_wr_dat), .en(i_wr_ens[11]), .clr(1'b0));
+flop_r #(32) r_x12(.clk(clk), .rst(1'b0), .q(x12), .d(i_wr_dat), .en(i_wr_ens[12]), .clr(1'b0));
+flop_r #(32) r_x13(.clk(clk), .rst(1'b0), .q(x13), .d(i_wr_dat), .en(i_wr_ens[13]), .clr(1'b0));
+flop_r #(32) r_x14(.clk(clk), .rst(1'b0), .q(x14), .d(i_wr_dat), .en(i_wr_ens[14]), .clr(1'b0));
+flop_r #(32) r_x15(.clk(clk), .rst(1'b0), .q(x15), .d(i_wr_dat), .en(i_wr_ens[15]), .clr(1'b0));
+flop_r #(32) r_x16(.clk(clk), .rst(1'b0), .q(x16), .d(i_wr_dat), .en(i_wr_ens[16]), .clr(1'b0));
+flop_r #(32) r_x17(.clk(clk), .rst(1'b0), .q(x17), .d(i_wr_dat), .en(i_wr_ens[17]), .clr(1'b0));
+flop_r #(32) r_x18(.clk(clk), .rst(1'b0), .q(x18), .d(i_wr_dat), .en(i_wr_ens[18]), .clr(1'b0));
+flop_r #(32) r_x19(.clk(clk), .rst(1'b0), .q(x19), .d(i_wr_dat), .en(i_wr_ens[19]), .clr(1'b0));
+flop_r #(32) r_x20(.clk(clk), .rst(1'b0), .q(x20), .d(i_wr_dat), .en(i_wr_ens[20]), .clr(1'b0));
+flop_r #(32) r_x21(.clk(clk), .rst(1'b0), .q(x21), .d(i_wr_dat), .en(i_wr_ens[21]), .clr(1'b0));
+flop_r #(32) r_x22(.clk(clk), .rst(1'b0), .q(x22), .d(i_wr_dat), .en(i_wr_ens[22]), .clr(1'b0));
+flop_r #(32) r_x23(.clk(clk), .rst(1'b0), .q(x23), .d(i_wr_dat), .en(i_wr_ens[23]), .clr(1'b0));
+flop_r #(32) r_x24(.clk(clk), .rst(1'b0), .q(x24), .d(i_wr_dat), .en(i_wr_ens[24]), .clr(1'b0));
+flop_r #(32) r_x25(.clk(clk), .rst(1'b0), .q(x25), .d(i_wr_dat), .en(i_wr_ens[25]), .clr(1'b0));
+flop_r #(32) r_x26(.clk(clk), .rst(1'b0), .q(x26), .d(i_wr_dat), .en(i_wr_ens[26]), .clr(1'b0));
+flop_r #(32) r_x27(.clk(clk), .rst(1'b0), .q(x27), .d(i_wr_dat), .en(i_wr_ens[27]), .clr(1'b0));
+flop_r #(32) r_x28(.clk(clk), .rst(1'b0), .q(x28), .d(i_wr_dat), .en(i_wr_ens[28]), .clr(1'b0));
+flop_r #(32) r_x29(.clk(clk), .rst(1'b0), .q(x29), .d(i_wr_dat), .en(i_wr_ens[29]), .clr(1'b0));
+flop_r #(32) r_x30(.clk(clk), .rst(1'b0), .q(x30), .d(i_wr_dat), .en(i_wr_ens[30]), .clr(1'b0));
+flop_r #(32) r_x31(.clk(clk), .rst(1'b0), .q(x31), .d(i_wr_dat), .en(i_wr_ens[31]), .clr(1'b0));
 
 
 // // Aliases (helpful for debugging assembly);

@@ -1,9 +1,12 @@
 module top
 (
     input   logic           clk, rst,
-    output  logic   [31:0]  InstrF, pcF, ReadDataM, ALUResultM, WriteDataM,
-    output  logic           MemWriteM
+    output  logic   [31:0]  WriteData, DataAddr,
+    output  logic           MemWrite
 );
+
+logic   [31:0]  InstrF, pcF, ReadDataM, ALUResultM, WriteDataM;
+logic           MemWriteM;
 
 processor proc
 (
@@ -34,5 +37,9 @@ imem im
     .a              (pcF),
     .rd             (InstrF)
 );
+
+assign WriteData = WriteDataM;
+assign DataAddr = ALUResultM;
+assign MemWrite = MemWriteM;
 
 endmodule
