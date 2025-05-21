@@ -20,18 +20,19 @@ processor proc
     .o_WriteDataM   (WriteDataM)    
 );
 
-data_mem dm
+dmem dm
 (
-    .addr           (ALUResultM),
-    .wr_dat         (WriteDataM),
-    .wr_en          (MemWriteM),
-    .rd_dat         (ReadDataM)
+    .clk           (clk),
+    .we            (MemWriteM),
+    .a             (ALUResultM),
+    .wd            (WriteDataM),
+    .rd            (ReadDataM)
 );
 
-instr_mem im
+imem im
 (
-    .pc             (pcF),
-    .instr          (InstrF)
+    .a              (pcF),
+    .rd             (InstrF)
 );
 
 endmodule
