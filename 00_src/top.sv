@@ -27,14 +27,14 @@ dmem dm
 (
     .clk           (clk),
     .we            (MemWriteM),
-    .a             (ALUResultM),
+    .a             (ALUResultM[5:0]),
     .wd            (WriteDataM),
     .rd            (ReadDataM)
 );
 
 imem im
 (
-    .a              (pcF),
+    .a              (pcF[5:0]),
     .rd             (InstrF)
 );
 
@@ -42,4 +42,6 @@ assign WriteData = WriteDataM;
 assign DataAddr = ALUResultM;
 assign MemWrite = MemWriteM;
 
-endmodule
+endmodule:top
+
+

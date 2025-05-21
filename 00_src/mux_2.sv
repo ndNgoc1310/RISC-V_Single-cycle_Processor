@@ -1,5 +1,5 @@
 module mux_2 
-#(parameter WIDTH = 8)
+#(parameter WIDTH = 32)
 (
     input   logic   [WIDTH-1:0] d0, d1,
     input   logic               s,
@@ -8,5 +8,4 @@ module mux_2
 
 assign y = s ? d1 : d0;
 
-endmodule
- 
+endmodule:mux_2

@@ -26,4 +26,6 @@ always_comb
         default: immext = 32'bx; // undefined
     endcase
         
-endmodule
+endmodule:extender
+
+

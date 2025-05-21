@@ -12,4 +12,6 @@ always_ff @(negedge clk, posedge rst)
     else if (clr)   q <= 0;
     else if (en)    q <= d;
 
-endmodule
+endmodule:flop_f
+
+

@@ -3,17 +3,16 @@ module controller
     input   logic   [6:0]   op,
     input   logic   [2:0]   funct3,
     input   logic           funct7b5,
-    input   logic           ZeroE,
+    input   logic           ZeroE, BranchE, JumpE,
     output  logic   [1:0]   ResultSrcD,
     output  logic           MemWriteD,
     output  logic           PCSrcE, ALUSrcD,
-    output  logic           RegWriteD, JumpD,
+    output  logic           RegWriteD, JumpD, BranchD,
     output  logic   [1:0]   ImmSrcD,
     output  logic   [2:0]   ALUControlD
 );
 
 logic   [1:0]   ALUOp;
-logic           BranchD;
 
 maindec md
 (
@@ -37,6 +36,8 @@ aludec ad
     .ALUControlD    (ALUControlD)
 );
 
-assign PCSrcE = (BranchD & ZeroE) | JumpD;
+assign PCSrcE = (BranchE & ZeroE) | JumpE;
 
-endmodule
+endmodule:controller
+
+

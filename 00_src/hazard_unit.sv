@@ -31,4 +31,6 @@ assign StallF   = lwStallD;
 assign FlushD   = PCSrcE; 
 assign FlushE   = lwStallD | PCSrcE; 
 
-endmodule
+endmodule:hazard_unit
+
+

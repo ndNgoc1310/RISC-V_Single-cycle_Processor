@@ -1,9 +1,11 @@
 -I./../../00_src/
-./../../00_src/adder.sv
+./../../00_src/adder_1b.sv
+./../../00_src/adder_nb.sv
+./../../00_src/alu.sv
 ./../../00_src/aludec.sv
 ./../../00_src/controller.sv
-./../../00_src/dmem.sv
 ./../../00_src/data_path.sv
+./../../00_src/dmem.sv
 ./../../00_src/extender.sv
 ./../../00_src/flop_f.sv
 ./../../00_src/flop_r.sv
@@ -12,6 +14,7 @@
 ./../../00_src/maindec.sv
 ./../../00_src/mux_2.sv
 ./../../00_src/mux_3.sv
+./../../00_src/mux_8.sv
 ./../../00_src/processor.sv
 ./../../00_src/reg_file.sv
 ./../../00_src/top.sv

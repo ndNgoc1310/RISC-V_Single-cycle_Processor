@@ -1,5 +1,5 @@
 module mux_3 
-#(parameter WIDTH = 8)
+#(parameter WIDTH = 32)
 (
     input   logic   [WIDTH-1:0] d0, d1, d2,
     input   logic   [1:0]       s,
@@ -8,4 +8,6 @@ module mux_3
 
 assign y = s[1] ? d2 : (s[0] ? d1 : d0);
 
-endmodule
+endmodule:mux_3
+
+

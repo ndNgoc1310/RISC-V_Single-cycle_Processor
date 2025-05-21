@@ -22,4 +22,6 @@ always_comb
         default:    controls = 11'bx_xx_x_x_xx_x_xx_x; // ??? 
     endcase
 
-endmodule
+endmodule:maindec
+
+

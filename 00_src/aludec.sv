@@ -26,4 +26,5 @@ always_comb
                 endcase
         endcase
 
- endmodule
+endmodule:aludec
+

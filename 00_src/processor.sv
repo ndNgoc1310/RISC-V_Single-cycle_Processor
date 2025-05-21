@@ -18,8 +18,13 @@ module processor
 // From/To Controller signals/buses
 logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD; 
 logic   [2:0]   ALUControlD;
-logic   [1:0]   ResultSrcD, ResultSrcE, ImmSrcD;
-logic   [31:0]  InstrD;
+logic   [1:0]   ResultSrcD, ImmSrcD;
+
+logic   [6:0]   op;
+logic   [14:12] funct3;
+logic           funct7b5;
+
+logic           ResultSrcEb0;
 logic           PCSrcE;
 logic           JumpE, BranchE, ZeroE;
 
@@ -54,16 +59,19 @@ always_comb
 
 controller ctrl
 (
-    .op             (InstrD[6:0]),
-    .funct3         (InstrD[14:12]),
-    .funct7b5       (InstrD[30]),
+    .op             (op),
+    .funct3         (funct3),
+    .funct7b5       (funct7b5),
     .ZeroE          (ZeroE),
+    .BranchE        (BranchE),
+    .JumpE          (JumpE),
     .ResultSrcD     (ResultSrcD),
     .MemWriteD      (MemWriteD),
     .PCSrcE         (PCSrcE),
     .ALUSrcD        (ALUSrcD),
     .RegWriteD      (RegWriteD),
     .JumpD          (JumpD),
+    .BranchD        (BranchD),
     .ImmSrcD        (ImmSrcD),
     .ALUControlD    (ALUControlD)
 );
@@ -83,7 +91,9 @@ data_path dp
     .ALUControlD    (ALUControlD),
     .ResultSrcD     (ResultSrcD),
     .ImmSrcD        (ImmSrcD),
-    .InstrD         (InstrD),
+    .op             (op),
+    .funct3         (funct3),
+    .funct7b5       (funct7b5),
 
     .PCSrcE         (PCSrcE),
     .JumpE          (JumpE),
@@ -98,7 +108,7 @@ data_path dp
     .Rs1D           (Rs1D),
     .Rs2D           (Rs2D),
 
-    .ResultSrcEb0   (ResultSrcE[0]),
+    .ResultSrcEb0   (ResultSrcEb0),
     .FlushE         (FlushE),
     .ForwardAE      (ForwardAE),
     .ForwardBE      (ForwardBE),
@@ -133,7 +143,7 @@ hazard_unit hu
     .RdM          (RdM),
     .RdW          (RdW),
     .PCSrcE       (PCSrcE),
-    .ResultSrcEb0 (ResultSrcE[0]),
+    .ResultSrcEb0 (ResultSrcEb0),
     .RegWriteM    (RegWriteM),
     .RegWriteW    (RegWriteW),
 
@@ -150,4 +160,6 @@ assign o_MemWriteM = MemWriteM;
 assign o_ALUResultM = ALUResultM;
 assign o_WriteDataM = WriteDataM;
 
-endmodule
+endmodule:processor
+
+

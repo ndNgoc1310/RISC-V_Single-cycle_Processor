@@ -1,5 +1,7 @@
-TOP=tbench
+TOP=testbench
 SEED=1
+
+all: sim run
 
 ## Do NOT change the content below unless you know what you're doing
 FLAGS =  --binary -Wall --trace --sv --timing
@@ -11,6 +13,7 @@ FLAGS += --build -j 0 --quiet
 LFLAGS = --lint-only --sv --timing --quiet
 RFLAGS =  +verilator+seed+$(SEED)
 RFLAGS += +verilator+quiet
+FLAGS += --Wno-UNUSEDSIGNAL
 
 TARGET = -f ./flist
 
@@ -20,9 +23,13 @@ lint:
 	verilator $(LFLAGS) $(TARGET)
 
 .PHONY: sim
+# sim:
+# 	@echo "-> SIMULATION"
+# 	verilator $(FLAGS) $(TARGET)
 sim:
 	@echo "-> SIMULATION"
-	verilator $(FLAGS) $(TARGET)
+	verilator $(FLAGS) $(TARGET) --exe sim_main.cpp
+	@make -C obj_dir -f V$(TOP).mk V$(TOP)
 
 .PHONY: run
 run:

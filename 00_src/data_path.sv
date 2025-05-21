@@ -7,7 +7,9 @@ module data_path
     input   logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD, 
     input   logic   [2:0]   ALUControlD,
     input   logic   [1:0]   ResultSrcD, ImmSrcD, 
-    output  logic   [31:0]  InstrD,
+    output  logic   [6:0]   op,
+    output  logic   [14:12] funct3,
+    output  logic           funct7b5,
 
     input   logic           PCSrcE,
     output  logic           JumpE, BranchE, ZeroE,
@@ -18,9 +20,10 @@ module data_path
     input   logic           StallD, FlushD,
     output  logic   [4:0]   Rs1D, Rs2D,
     
-    input   logic           ResultSrcEb0, FlushE, 
+    input   logic           FlushE, 
     input   logic   [1:0]   ForwardAE, ForwardBE,
     output  logic   [4:0]   Rs1E, Rs2E, RdE, 
+    output  logic           ResultSrcEb0,
 
     output  logic           RegWriteM,
     output  logic   [4:0]   RdM,
@@ -43,14 +46,19 @@ module data_path
 logic   [31:0]  pcF0, PCPlus4F;
 
 // Decode Stage (D)
-logic   [31:0]  pcD, ImmExtD, PCPlus4D;
+logic   [31:0]  InstrD, pcD, ImmExtD, PCPlus4D;
 logic   [31:0]  Read1D, Read2D;
 logic   [4:0]   RdD;
+
+assign op = InstrD[6:0];
+assign funct3 = InstrD[14:12];
+assign funct7b5 = InstrD[30];
 
 // Execute Stage (E)
 logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;
 logic           RegWriteE, MemWriteE, ALUSrcE;
 logic   [1:0]   ResultSrcE;
+assign ResultSrcEb0 = ResultSrcE[0];
 logic   [2:0]   ALUControlE;
 
 // Memory Stage (M)
@@ -166,26 +174,38 @@ mux_3 #(.WIDTH(32)) rsltmux
 );
 
 // Adders
-adder #(.WIDTH(32)) PCplus4
+logic PCplus4cout;
+
+adder_nb #(.WIDTH(32)) PCplus4
 (
     .a      (pcF),
     .b      (32'd4),
-    .y      (PCPlus4F)
+    .cin    (1'b0),
+    .cout   (PCplus4cout),
+    .sum    (PCPlus4F)
 );
 
-adder #(.WIDTH(32)) PCplusbranch
+logic PCplusbranchcout;
+
+adder_nb #(.WIDTH(32)) PCplusbranch
 (
     .a      (pcE),
     .b      (ImmExtE),
-    .y      (PCTargetE)
+    .cin    (1'b0),
+    .cout   (PCplusbranchcout),
+    .sum    (PCTargetE)
 );
 
 // ALU
-adder #(.WIDTH(32)) ALU
+logic   OverflowE;
+alu ALU
 (
-    .a      (SrcAE),
-    .b      (SrcBE),
-    .y      (ALUResultE)
+    .a          (SrcAE),
+    .b          (SrcBE),
+    .ALUControl (ALUControlE),
+    .rslt       (ALUResultE),
+    .overflow   (OverflowE),
+    .zero       (ZeroE)
 );
 
 // Immediate Extender
@@ -210,4 +230,6 @@ reg_file rf
     .o_rd_dat_1     (Read2D)
 );
 
-endmodule
+endmodule:data_path
+
+
