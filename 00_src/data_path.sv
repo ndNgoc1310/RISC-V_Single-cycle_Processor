@@ -30,7 +30,7 @@ module data_path
 
     // From/To Instruction Memory signals/buses
     input   logic   [31:0]  InstrF,
-    output  logic   [31:0]  PCF,
+    output  logic   [31:0]  pcF,
 
     // From/To Data Memory signals/buses
     input   logic   [31:0]  ReadDataM,
@@ -40,14 +40,14 @@ module data_path
 
 // Data Path Signals/Buses
 // Fetch Stage (F)
-logic   [31:0]  PCF0, PCPlus4F;
+logic   [31:0]  pcF0, PCPlus4F;
 
 // Decode Stage (D)
-logic   [31:0]  PCD, ImmExtD, PCPlus4D;
-logic   [4:0]   RD1D, RD2D, RdD;
+logic   [31:0]  pcD, ImmExtD, PCPlus4D;
+logic   [4:0]   Read1D, Read2D, RdD;
 
 // Execute Stage (E)
-logic   [31:0]  RD1E, RD2E, PCE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;
+logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;
 logic           RegWriteE, MemWriteE, ALUSrcE;
 logic   [1:0]   ResultSrcE;
 logic   [2:0]   ALUControlE;
@@ -72,8 +72,8 @@ flop_r #(.WIDTH(32)) Freg
     .rst    (rst),
     .en     (~StallF),
     .clr    (1'b0),
-    .d      (PCF0),
-    .q      (PCF)
+    .d      (pcF0),
+    .q      (pcF)
 );
 
 flop_r #(.WIDTH(96)) Dreg
@@ -82,8 +82,8 @@ flop_r #(.WIDTH(96)) Dreg
     .rst    (rst),
     .en     (~StallD),
     .clr    (FlushD),
-    .d      ({InstrF, PCF, PCPlus4F}),
-    .q      ({InstrD, PCD, PCPlus4D})
+    .d      ({InstrF, pcF, PCPlus4F}),
+    .q      ({InstrD, pcD, PCPlus4D})
 );
 
 flop_r #(.WIDTH(185)) Ereg
@@ -93,10 +93,10 @@ flop_r #(.WIDTH(185)) Ereg
     .en     (1'b1),
     .clr    (FlushE),
     .d      ({RegWriteD, ResultSrcD, MemWriteD, JumpD, BranchD, 
-                ALUControlD, ALUSrcD, RD1D, RD2D, PCD, Rs1D, Rs2D, RdD,
+                ALUControlD, ALUSrcD, Read1D, Read2D, pcD, Rs1D, Rs2D, RdD,
                 ImmExtD, PCPlus4D}),
     .q      ({RegWriteE, ResultSrcE, MemWriteE, JumpE, BranchE, 
-                ALUControlE, ALUSrcE, RD1E, RD2E, PCE, Rs1E, Rs2E, RdE,
+                ALUControlE, ALUSrcE, Read1E, Read2E, pcE, Rs1E, Rs2E, RdE,
                 ImmExtE, PCPlus4E})
 );
 
@@ -126,12 +126,12 @@ mux_2 #(.WIDTH(32)) PCmux
     .d0    (PCPlus4F),
     .d1    (PCTargetE),
     .s     (PCSrcE),
-    .y     (PCF0)
+    .y     (pcF0)
 );
 
 mux_3 #(.WIDTH(32)) srcAmux
 (
-    .d0    (RD1E),
+    .d0    (Read1E),
     .d1    (ResultW),
     .d2    (ALUResultM),
     .s     (ForwardAE),
@@ -140,7 +140,7 @@ mux_3 #(.WIDTH(32)) srcAmux
 
 mux_3 #(.WIDTH(32)) srcBmux1
 (
-    .d0    (RD2E),
+    .d0    (Read2E),
     .d1    (ResultW),
     .d2    (ALUResultM),
     .s     (ForwardBE),
@@ -167,14 +167,14 @@ mux_3 #(.WIDTH(32)) rsltmux
 // Adders
 adder #(.WIDTH(32)) PCplus4
 (
-    .a      (PCF),
+    .a      (pcF),
     .b      (32'd4),
     .y      (PCPlus4F)
 );
 
 adder #(.WIDTH(32)) PCplusbranch
 (
-    .a      (PCE),
+    .a      (pcE),
     .b      (ImmExtE),
     .y      (PCTargetE)
 );
@@ -205,8 +205,8 @@ reg_file rf
     .i_wr_addr      (RdW),
     .i_wr_en        (RegWriteW),
     .i_wr_dat       (ResultW),
-    .o_rd_dat_0     (RD1D),
-    .o_rd_dat_1     (RD2D)
+    .o_rd_dat_0     (Read1D),
+    .o_rd_dat_1     (Read2D)
 );
 
 endmodule

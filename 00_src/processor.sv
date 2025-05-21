@@ -1,41 +1,56 @@
 module processor
 (
+    // System signals
     input   logic           clk, rst,
-    // output  logic   [31:0]  PC,
-    // input   logic   [31:0]  Instr,
-    // output  logic           MemWriteD,
-    // output  logic   [31:0]  ALUResult, WriteData,
-    // input   logic   [31:0]  ReadData
+
+    // Data path - Instruction Memory
+    input   logic   [31:0]  i_InstrF,
+    output  logic   [31:0]  o_pcF,
+    
+    // Controller - Data Memory
+    output  logic           o_MemWriteM,
+
+    // Data path - Data Memory
+    input   logic   [31:0]  i_ReadDataM,
+    output  logic   [31:0]  o_ALUResultM, o_WriteDataM
 );
 
 // From/To Controller signals/buses
-logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD, 
-logic   [2:0]   ALUControlD,
-logic   [1:0]   ResultSrcD, ImmSrcD, 
-logic   [31:0]  InstrD,
-logic           PCSrcE,
-logic           JumpE, BranchE, ZeroE,
+logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD; 
+logic   [2:0]   ALUControlD;
+logic   [1:0]   ResultSrcD, ImmSrcD;
+logic   [31:0]  InstrD;
+logic           PCSrcE;
+logic           JumpE, BranchE, ZeroE;
 
 // From/To Hazard Unit signals/buses
-logic           StallF,
-logic           StallD, FlushD,
-logic   [4:0]   Rs1D, Rs2D,
-logic           FlushE, 
-logic   [1:0]   ForwardAE, ForwardBE,
-logic   [4:0]   Rs1E, Rs2E, RdE, 
-logic           RegWriteM,
-logic   [4:0]   RdM,
-logic           RegWriteW,
-logic   [4:0]   RdW,
+logic           StallF;
+logic           StallD, FlushD;
+logic   [4:0]   Rs1D, Rs2D;
+logic           FlushE; 
+logic   [1:0]   ForwardAE, ForwardBE;
+logic   [4:0]   Rs1E, Rs2E, RdE; 
+logic           RegWriteM;
+logic   [4:0]   RdM;
+logic           RegWriteW;
+logic   [4:0]   RdW;
 
 // From/To Instruction Memory signals/buses
-logic   [31:0]  InstrF,
-logic   [31:0]  PCF,
+logic   [31:0]  InstrF;
+logic   [31:0]  pcF;
+
+always_comb
+    // Read Instruction
+    InstrF = i_InstrF;
 
 // From/To Data Memory signals/buses
-logic   [31:0]  ReadDataM,
-logic   [31:0]  ALUResultM, WriteDataM,
-logic           MemWriteM
+logic   [31:0]  ReadDataM;
+logic   [31:0]  ALUResultM, WriteDataM;
+logic           MemWriteM;
+
+always_comb
+    // Memory Read Data
+    ReadDataM = i_ReadDataM;
 
 controller ctrl
 (
@@ -99,7 +114,7 @@ data_path dp
 
     // From/To Instruction Memory signals/buses
     .InstrF         (InstrF),
-    .PCF            (PCF),
+    .pcF            (pcF),
 
     // From/To Data Memory signals/buses
     .ReadDataM      (ReadDataM),
@@ -121,7 +136,7 @@ hazard_unit hu
     .ResultSrcEb0 (ResultSrcE[0]),
     .RegWriteM    (RegWriteM),
     .RegWriteW    (RegWriteW),
-    
+
     .StallF       (StallF),
     .StallD       (StallD),
     .FlushD       (FlushD),
@@ -129,5 +144,10 @@ hazard_unit hu
     .ForwardAE    (ForwardAE),
     .ForwardBE    (ForwardBE)
 );
+
+assign o_pcF = pcF;
+assign o_MemWriteM = MemWriteM;
+assign o_ALUResultM = ALUResultM;
+assign o_WriteDataM = WriteDataM;
 
 endmodule

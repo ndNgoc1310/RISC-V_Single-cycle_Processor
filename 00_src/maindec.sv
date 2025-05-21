@@ -2,7 +2,7 @@ module maindec
 (
     input   logic   [6:0]   op,
     output  logic           RegWriteD, JumpD, BranchD, MemWriteD, ALUSrcD,
-    output  logic   [1:0]   ResultSrcD, ImmSrcD 
+    output  logic   [1:0]   ResultSrcD, ImmSrcD,
     output  logic   [1:0]   ALUOp
 );
 

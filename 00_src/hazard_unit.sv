@@ -1,10 +1,10 @@
 module hazard_unit
 (
-    input   logic   [4:0]   Rs1D, Rs2D, Rs1E, Rs2E, RdE, RdM, RdW;
-    input   logic           PCSrcE, ResultSrcEb0, RegWriteM, RegWriteW;
+    input   logic   [4:0]   Rs1D, Rs2D, Rs1E, Rs2E, RdE, RdM, RdW,
+    input   logic           PCSrcE, ResultSrcEb0, RegWriteM, RegWriteW,
 
-    output  logic           StallF, StallD, FlushD, FlushE;
-    output  logic   [1:0]   ForwardAE, ForwardBE;
+    output  logic           StallF, StallD, FlushD, FlushE,
+    output  logic   [1:0]   ForwardAE, ForwardBE
 );
 
 logic   lwStallD; 
