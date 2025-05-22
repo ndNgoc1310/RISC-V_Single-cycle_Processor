@@ -4,7 +4,7 @@ SEED=1
 all: sim run
 
 ## Do NOT change the content below unless you know what you're doing
-FLAGS =  --binary -Wall --trace --sv --timing
+FLAGS =  -Wall --trace --sv --timing
 FLAGS += -O3 --compiler gcc -CFLAGS -std=gnu++20
 FLAGS += -x-initial unique
 FLAGS += -x-assign unique
@@ -28,7 +28,7 @@ lint:
 # 	verilator $(FLAGS) $(TARGET)
 sim:
 	@echo "-> SIMULATION"
-	verilator $(FLAGS) $(TARGET) --exe sim_main.cpp
+	verilator --cc $(FLAGS) $(TARGET) --exe sim_main.cpp
 	@make -C obj_dir -f V$(TOP).mk V$(TOP)
 
 .PHONY: run

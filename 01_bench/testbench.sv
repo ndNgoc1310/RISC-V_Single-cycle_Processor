@@ -4,15 +4,16 @@ module testbench
     input logic rst
 );
 
-logic [31:0] WriteData, DataAdr;
+logic [31:0] WriteData, DataAddr;
 logic        MemWrite;
 
 // instantiate DUT (top module)
-top dut(
+top dut
+(
     .clk(clk),
-    .reset(rst),
+    .rst(rst),
     .WriteData(WriteData),
-    .DataAdr(DataAdr),
+    .DataAddr(DataAddr),
     .MemWrite(MemWrite)
 );
 
@@ -23,16 +24,19 @@ initial begin
 end
 
 // result checking
-always_ff @(negedge clk) begin
-    if (MemWrite) begin
-        if (DataAdr === 100 && WriteData === 25) begin
-            $display("✅ Simulation succeeded");
-            $finish;
-        end else if (DataAdr !== 96) begin
-            $display("❌ Simulation failed");
-            $finish;
-        end
+always @(negedge clk) begin
+  if (MemWrite) begin
+    $display("At time %t: Write %d to address %d", $time, WriteData, DataAddr);
+    if (DataAddr === 100 && WriteData === 25) begin
+      $display("✅ Simulation succeeded");
+      $stop;
+    end else if (DataAddr !== 96) begin
+      $display("❌ Simulation failed");
+      $stop;
     end
+  end
 end
 
+
 endmodule
+
