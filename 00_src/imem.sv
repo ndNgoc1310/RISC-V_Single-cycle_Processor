@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module imem
 #(
     parameter   ADDR_WIDTH = 6,

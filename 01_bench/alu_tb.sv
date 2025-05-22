@@ -12,7 +12,7 @@ module alu_tb;
     .a(a),
     .b(b),
     .ALUControl(ALUControl),
-    .result(result),
+    .rslt(result),
     .zero(zero)
   );
 

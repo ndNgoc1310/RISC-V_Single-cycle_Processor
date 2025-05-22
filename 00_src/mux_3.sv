@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module mux_3 
 #(parameter WIDTH = 32)
 (

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module flop_r 
 #(parameter WIDTH = 8)
 

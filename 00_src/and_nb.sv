@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module and_nb
 #(parameter WIDTH = 32)
 

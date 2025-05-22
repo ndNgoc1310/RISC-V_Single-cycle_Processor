@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module extender
 (
     input   logic   [31:7]  instr,

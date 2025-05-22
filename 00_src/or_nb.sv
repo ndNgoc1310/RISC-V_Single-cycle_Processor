@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module or_nb
 #(parameter WIDTH = 32)
 

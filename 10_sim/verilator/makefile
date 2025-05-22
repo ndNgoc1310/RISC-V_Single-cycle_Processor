@@ -23,13 +23,16 @@ lint:
 	verilator $(LFLAGS) $(TARGET)
 
 .PHONY: sim
-sim:
-	@echo "-> SIMULATION"
-	verilator $(FLAGS) $(TARGET)
+# sim:
+# 	@echo "-> SIMULATION"
+# 	verilator $(FLAGS) $(TARGET)
 # sim:
 # 	@echo "-> SIMULATION"
 # 	verilator --cc $(FLAGS) $(TARGET) --exe alu_tb.cpp
 # 	@make -C obj_dir -f V$(TOP).mk V$(TOP)
+sim:
+	@echo "-> SIMULATION"
+	verilator --binary $(FLAGS) $(TARGET)
 
 .PHONY: run
 run:

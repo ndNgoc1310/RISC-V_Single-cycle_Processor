@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module dmem
 #(
     parameter   ADDR_WIDTH = 6,

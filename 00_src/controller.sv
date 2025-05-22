@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module controller
 (
     input   logic   [6:0]   op,

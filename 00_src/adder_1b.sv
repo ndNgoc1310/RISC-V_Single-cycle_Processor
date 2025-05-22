@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module adder_1b
 (
         input   logic   a, b, cin,
