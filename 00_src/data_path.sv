@@ -197,14 +197,12 @@ adder_nb #(.WIDTH(32)) PCplusbranch
 );
 
 // ALU
-logic   OverflowE;
 alu ALU
 (
     .a          (SrcAE),
     .b          (SrcBE),
     .ALUControl (ALUControlE),
     .rslt       (ALUResultE),
-    .overflow   (OverflowE),
     .zero       (ZeroE)
 );
 

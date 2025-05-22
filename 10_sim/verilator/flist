@@ -17,6 +17,8 @@
 ./../../00_src/mux_8.sv
 ./../../00_src/processor.sv
 ./../../00_src/reg_file.sv
+./../../00_src/and_nb.sv
+./../../00_src/or_nb.sv
 ./../../00_src/top.sv
 
 ./../../01_bench/testbench.sv
