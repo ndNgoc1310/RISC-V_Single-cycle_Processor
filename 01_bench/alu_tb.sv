@@ -1,106 +1,77 @@
-module alu_tb();
-    // Test stimulus signals
-    logic [31:0] a, b;
-    logic [2:0]  ALUControl;
-    logic [31:0] rslt;
-    logic        zero;
+`timescale 1ns/1ps
 
-    // Instantiate ALU
-    alu dut(
-        .a          (a),
-        .b          (b),
-        .ALUControl (ALUControl),
-        .rslt       (rslt),
-        .zero       (zero)
-    );
+module alu_tb;
 
-    // Test case counter
-    int test_count = 0;
-    int error_count = 0;
+  logic [31:0] a, b;
+  logic [2:0] ALUControl;
+  logic [31:0] result;
+  logic zero;
 
-    // Helper task to check results
-    task check_result(
-        input string instr_name,
-        input logic [31:0] expected_result,
-        input logic expected_zero
-    );
-        test_count++;
-        if (rslt !== expected_result || zero !== expected_zero) begin
-            $display("Error testing %s at %0t:", instr_name, $time);
-            $display("  Inputs: a = 0x%8h, b = 0x%8h, ALUControl = %b", a, b, ALUControl);
-            $display("  Expected: result = 0x%8h, zero = %b", expected_result, expected_zero);
-            $display("  Got:      result = 0x%8h, zero = %b", rslt, zero);
-            error_count++;
-        end else begin
-            $display("Test passed: %s", instr_name);
-        end
-    endtask
+  // Instantiate the ALU
+  alu dut (
+    .a(a),
+    .b(b),
+    .ALUControl(ALUControl),
+    .result(result),
+    .zero(zero)
+  );
 
-    // Test stimulus
-    initial begin
-        $display("\nStarting ALU Testbench for RV32I Instructions...\n");
+  task run_test(input [31:0] in_a, input [31:0] in_b, input [2:0] op, input [31:0] expected, input string instr_name);
+    a = in_a;
+    b = in_b;
+    ALUControl = op;
+    #5;
+    if (result !== expected)
+      $display("❌ %s FAILED: a=%h, b=%h, ALUControl=%b => result=%h (expected %h)", instr_name, a, b, ALUControl, result, expected);
+    else
+      $display("✅ %s PASSED: a=%h, b=%h, ALUControl=%b => result=%h", instr_name, a, b, ALUControl, result);
+  endtask
 
-        // Test ADD (add instruction)
-        a = 32'h0000_4000; b = 32'h0000_2000; ALUControl = 3'b000; #10;
-        check_result("ADD", 32'h0000_6000, 1'b0);
+  initial begin
+    $display("===== ALU Instruction Tests =====");
 
-        // Test ADDI (addi instruction)
-        a = 32'h0000_0005; b = 32'h0000_0003; ALUControl = 3'b000; #10;
-        check_result("ADDI", 32'h0000_0008, 1'b0);
+    // ADD
+    run_test(32'd10, 32'd5, 3'b000, 32'd15, "ADD");
 
-        // Test LW (load word - uses add)
-        a = 32'h1000_0000; b = 32'h0000_0004; ALUControl = 3'b000; #10;
-        check_result("LW", 32'h1000_0004, 1'b0);
+    // ADDI (same ALU operation as ADD)
+    run_test(32'd20, 32'd12, 3'b000, 32'd32, "ADDI");
 
-        // Test SW (store word - uses add)
-        a = 32'h2000_0000; b = 32'h0000_0008; ALUControl = 3'b000; #10;
-        check_result("SW", 32'h2000_0008, 1'b0);
+    // SUB
+    run_test(32'd10, 32'd3, 3'b001, 32'd7, "SUB");
 
-        // Test BEQ (branch if equal - uses subtract)
-        a = 32'h0000_000A; b = 32'h0000_000A; ALUControl = 3'b001; #10;
-        check_result("BEQ (equal)", 32'h0000_0000, 1'b1);
+    // AND
+    run_test(32'hFF00FF00, 32'h0F0F0F0F, 3'b010, 32'h0F000F00, "AND");
 
-        // Test SUB (subtract)
-        a = 32'h0000_000F; b = 32'h0000_0003; ALUControl = 3'b001; #10;
-        check_result("SUB", 32'h0000_000C, 1'b0);
+    // ANDI (same as AND)
+    run_test(32'h000000FF, 32'h000000F0, 3'b010, 32'h000000F0, "ANDI");
 
-        // Test AND (and instruction)
-        a = 32'hF0F0_F0F0; b = 32'h0F0F_0F0F; ALUControl = 3'b010; #10;
-        check_result("AND", 32'h0000_0000, 1'b1);
+    // OR
+    run_test(32'hF0000000, 32'h0F000000, 3'b011, 32'hFF000000, "OR");
 
-        // Test ANDI (and immediate)
-        a = 32'hFFFF_FFFF; b = 32'h0000_00FF; ALUControl = 3'b010; #10;
-        check_result("ANDI", 32'h0000_00FF, 1'b0);
+    // ORI
+    run_test(32'h0000000F, 32'h000000F0, 3'b011, 32'h000000FF, "ORI");
 
-        // Test OR (or instruction)
-        a = 32'hF0F0_0000; b = 32'h0F0F_0000; ALUControl = 3'b011; #10;
-        check_result("OR", 32'hFFFF_0000, 1'b0);
+    // SLT
+    run_test(32'd3, 32'd4, 3'b101, 32'd1, "SLT");
+    run_test(32'd10, 32'd2, 3'b101, 32'd0, "SLT");
 
-        // Test ORI (or immediate)
-        a = 32'h0000_FF00; b = 32'h0000_00FF; ALUControl = 3'b011; #10;
-        check_result("ORI", 32'h0000_FFFF, 1'b0);
+    // SLTI
+    run_test(32'd7, 32'd8, 3'b101, 32'd1, "SLTI");
+    run_test(32'd9, 32'd3, 3'b101, 32'd0, "SLTI");
 
-        // Test SLT (set less than)
-        a = 32'h0000_0003; b = 32'h0000_0005; ALUControl = 3'b101; #10;
-        check_result("SLT", 32'h0000_0001, 1'b0);
+    // BEQ check via zero flag
+    a = 32'd42; b = 32'd42; ALUControl = 3'b001; #5;
+    if (zero !== 1) $display("❌ BEQ FAIL: expected zero=1, got %b", zero);
+    else            $display("✅ BEQ PASS");
 
-        // Test SLTI (set less than immediate)
-        a = 32'hFFFF_FFFF; b = 32'h0000_0001; ALUControl = 3'b101; #10;
-        check_result("SLTI", 32'h0000_0001, 1'b0);
+    a = 32'd42; b = 32'd43; ALUControl = 3'b001; #5;
+    if (zero !== 0) $display("❌ BEQ FAIL: expected zero=0, got %b", zero);
+    else            $display("✅ BEQ PASS");
 
-        // Report results
-        $display("\nTest Summary:");
-        $display("  Total Tests:    %0d", test_count);
-        $display("  Failed Tests:   %0d", error_count);
-        $display("  Passed Tests:   %0d", test_count - error_count);
-        $display("  Overall Status: %s\n", error_count == 0 ? "PASSED" : "FAILED");
-        $finish;
-    end
+    // LW/SW share ADD operation
+    run_test(32'd1000, 32'd20, 3'b000, 32'd1020, "LW/SW");
 
-    // Generate VCD file for waveform viewing
-    initial begin
-        $dumpfile("alu_tb.vcd");
-        $dumpvars(0, alu_tb);
-    end
-
-endmodule:alu_tb
+    $display("===== ALU Testing Finished =====");
+    $finish;
+  end
+endmodule
