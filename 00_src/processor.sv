@@ -4,6 +4,7 @@ module processor
 (
     // System signals
     input   logic           clk, rst,
+    output  logic           Ecall, Ebreak,
 
     // Data path - Instruction Memory
     input   logic   [31:0]  i_InstrF,
@@ -18,17 +19,20 @@ module processor
 );
 
 // From/To Controller signals/buses
-logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD; 
-logic   [2:0]   ALUControlD;
-logic   [1:0]   ResultSrcD, ImmSrcD;
+logic           RegWriteD, MemWriteD, JumpD, BranchD; 
+logic   [3:0]   ALUControlD;
+logic   [1:0]   ResultSrcD, ALUSrcD;
+logic   [2:0]   ImmSrcD;
+
 
 logic   [6:0]   op;
 logic   [14:12] funct3;
 logic           funct7b5;
+logic   [11:0]  funct12;
 
 logic           ResultSrcEb0;
 logic           PCSrcE;
-logic           JumpE, BranchE, ZeroE;
+logic           JumpE, BranchE, ZeroE, ALUResultEb0;
 
 // From/To Hazard Unit signals/buses
 logic           StallF;
@@ -46,27 +50,25 @@ logic   [4:0]   RdW;
 logic   [31:0]  InstrF;
 logic   [31:0]  pcF;
 
-always_comb
-    // Read Instruction
-    InstrF = i_InstrF;
+assign InstrF = i_InstrF;
 
 // From/To Data Memory signals/buses
 logic   [31:0]  ReadDataM;
 logic   [31:0]  ALUResultM, WriteDataM;
 logic           MemWriteM;
 
-always_comb
-    // Memory Read Data
-    ReadDataM = i_ReadDataM;
+assign ReadDataM = i_ReadDataM;
 
 controller ctrl
 (
     .op             (op),
     .funct3         (funct3),
     .funct7b5       (funct7b5),
+    .funct12        (funct12),
     .ZeroE          (ZeroE),
     .BranchE        (BranchE),
     .JumpE          (JumpE),
+    .ALUResultEb0   (ALUResultEb0),
     .ResultSrcD     (ResultSrcD),
     .MemWriteD      (MemWriteD),
     .PCSrcE         (PCSrcE),
@@ -75,7 +77,9 @@ controller ctrl
     .JumpD          (JumpD),
     .BranchD        (BranchD),
     .ImmSrcD        (ImmSrcD),
-    .ALUControlD    (ALUControlD)
+    .ALUControlD    (ALUControlD),
+    .Ecall          (Ecall),
+    .Ebreak         (Ebreak)
 );
 
 data_path dp
@@ -96,11 +100,13 @@ data_path dp
     .op             (op),
     .funct3         (funct3),
     .funct7b5       (funct7b5),
+    .funct12        (funct12),
 
     .PCSrcE         (PCSrcE),
     .JumpE          (JumpE),
     .BranchE        (BranchE),
     .ZeroE          (ZeroE),
+    .ALUResultEb0   (ALUResultEb0),
 
     // From/To Hazard Unit signals/buses
     .StallF         (StallF),

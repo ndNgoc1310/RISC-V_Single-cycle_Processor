@@ -1,7 +1,7 @@
 module testbench 
 (
-    input logic clk,
-    input logic rst
+    input logic clk, rst,
+    output logic Ecall, Ebreak
 );
 
 logic [31:0] WriteData, DataAddr;
@@ -12,6 +12,8 @@ top dut
 (
     .clk(clk),
     .rst(rst),
+    .Ecall(Ecall),
+    .Ebreak(Ebreak),
     .WriteData(WriteData),
     .DataAddr(DataAddr),
     .MemWrite(MemWrite)

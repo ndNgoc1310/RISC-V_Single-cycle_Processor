@@ -6,15 +6,17 @@ module data_path
     input   logic           clk, rst,
 
     // From/To Controller signals/buses
-    input   logic           RegWriteD, MemWriteD, JumpD, BranchD, ALUSrcD, 
-    input   logic   [2:0]   ALUControlD,
-    input   logic   [1:0]   ResultSrcD, ImmSrcD, 
+    input   logic           RegWriteD, MemWriteD, JumpD, BranchD, 
+    input   logic   [3:0]   ALUControlD,
+    input   logic   [1:0]   ResultSrcD, ALUSrcD, 
+    input   logic   [2:0]   ImmSrcD, 
     output  logic   [6:0]   op,
     output  logic   [14:12] funct3,
     output  logic           funct7b5,
+    output  logic   [11:0]  funct12,
 
     input   logic           PCSrcE,
-    output  logic           JumpE, BranchE, ZeroE,
+    output  logic           JumpE, BranchE, ZeroE, ALUResultEb0,
 
     // From/To Hazard Unit signals/buses
     input   logic           StallF,
@@ -55,13 +57,16 @@ logic   [4:0]   RdD;
 assign op = InstrD[6:0];
 assign funct3 = InstrD[14:12];
 assign funct7b5 = InstrD[30];
+assign funct12 = InstrD[31:20];
 
 // Execute Stage (E)
 logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;
-logic           RegWriteE, MemWriteE, ALUSrcE;
-logic   [1:0]   ResultSrcE;
+logic           RegWriteE, MemWriteE;
+logic   [1:0]   ResultSrcE, ALUSrcE;
+logic   [3:0]   ALUControlE;
+
+assign ALUResultEb0 = ALUResultE[0];
 assign ResultSrcEb0 = ResultSrcE[0];
-logic   [2:0]   ALUControlE;
 
 // Memory Stage (M)
 logic   [31:0]  PCPlus4M;
@@ -73,8 +78,7 @@ logic   [31:0]  ALUResultW, ReadDataW, PCPlus4W, ResultW;
 
 assign Rs1D = InstrD[19:15];
 assign Rs2D = InstrD[24:20];
-always_comb
-    RdD  = InstrD[11:7];
+assign RdD  = InstrD[11:7];
 
 // Pipeline Registers
 flop_r #(.WIDTH(32)) Freg
@@ -111,6 +115,8 @@ flop_r #(.WIDTH(185)) Ereg
                 ImmExtE, PCPlus4E})
 );
 
+logic [31:0] tmp_WriteDataM;
+
 flop_r #(.WIDTH(105)) Mreg
 (
     .clk    (clk),
@@ -118,8 +124,20 @@ flop_r #(.WIDTH(105)) Mreg
     .en     (1'b1),
     .clr    (1'b0),
     .d      ({RegWriteE, ResultSrcE, MemWriteE, ALUResultE, WriteDataE, RdE, PCPlus4E}),
-    .q      ({RegWriteM, ResultSrcM, MemWriteM, ALUResultM, WriteDataM, RdM, PCPlus4M})
+    .q      ({RegWriteM, ResultSrcM, MemWriteM, ALUResultM, tmp_WriteDataM, RdM, PCPlus4M})
 );
+
+always_comb 
+begin
+    case(funct3)
+        3'b000:     WriteDataM = {ReadDataM[31:8],  tmp_WriteDataM[7:0]};     // sb
+        3'b001:     WriteDataM = {ReadDataM[31:16], tmp_WriteDataM[15:0]};   // sh
+        3'b010:     WriteDataM = tmp_WriteDataM;                                 // sw
+        default:    WriteDataM = 32'bx;
+    endcase
+end
+
+logic [31:0] tmp_ReadDataW;
 
 flop_r #(.WIDTH(104)) Wreg
 (
@@ -128,24 +146,46 @@ flop_r #(.WIDTH(104)) Wreg
     .en     (1'b1),
     .clr    (1'b0),
     .d      ({RegWriteM, ResultSrcM, ALUResultM, ReadDataM, RdM, PCPlus4M}),
-    .q      ({RegWriteW, ResultSrcW, ALUResultW, ReadDataW, RdW, PCPlus4W})
+    .q      ({RegWriteW, ResultSrcW, ALUResultW, tmp_ReadDataW, RdW, PCPlus4W})
 );
+
+always_comb 
+begin
+    case(funct3)
+        3'b000:  ReadDataW = {{24{tmp_ReadDataW[7]}}, tmp_ReadDataW[7:0]};      // lb
+        3'b001:  ReadDataW = {{16{tmp_ReadDataW[15]}}, tmp_ReadDataW[15:0]};    // lh
+        3'b010:  ReadDataW = tmp_ReadDataW;                                     // lw
+        3'b100:  ReadDataW = {24'b0, tmp_ReadDataW[7:0]};                       // lbu
+        3'b101:  ReadDataW = {16'b0, tmp_ReadDataW[15:0]};                      // lhu
+        default: ReadDataW = 32'bx;
+    endcase
+end
 
 // Multiplexers
 mux_2 #(.WIDTH(32)) PCmux
 (
     .d0    (PCPlus4F),
     .d1    (PCTargetE),
-    .s     (PCSrcE),
+    .s     (PCSrcE),    
     .y     (pcF0)
 );
 
-mux_3 #(.WIDTH(32)) srcAmux
+logic [31:0] tmp_SrcAE;
+
+mux_3 #(.WIDTH(32)) srcAmux1
 (
     .d0    (Read1E),
     .d1    (ResultW),
     .d2    (ALUResultM),
     .s     (ForwardAE),
+    .y     (tmp_SrcAE)
+);
+
+mux_2 #(.WIDTH(32)) srcAmux2
+(
+    .d0    (tmp_SrcAE),
+    .d1    (pcE),
+    .s     (ALUSrcE[1]),
     .y     (SrcAE)
 );
 
@@ -162,7 +202,7 @@ mux_2 #(.WIDTH(32)) srcBmux2
 (
     .d0    (WriteDataE),
     .d1    (ImmExtE),
-    .s     (ALUSrcE),
+    .s     (ALUSrcE[0]),
     .y     (SrcBE)
 );
 
@@ -199,8 +239,18 @@ adder_nb #(.WIDTH(32)) PCplusbranch
 );
 
 // ALU
+// Debugging
+logic [31:0] db_src_b, db_sum;
+logic db_cout, db_overflow;
+
 alu ALU
 (
+    // Debugging
+    .db_src_b(db_src_b),
+    .db_sum(db_sum),
+    .db_cout(db_cout),
+    .db_overflow(db_overflow),
+    
     .a          (SrcAE),
     .b          (SrcBE),
     .ALUControl (ALUControlE),

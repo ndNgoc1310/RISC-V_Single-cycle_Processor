@@ -12,7 +12,7 @@ VM_TIMING = 1
 # Coverage output mode?  0/1 (from --coverage)
 VM_COVERAGE = 0
 # Parallel builds?  0/1 (from --output-split)
-VM_PARALLEL_BUILDS = 0
+VM_PARALLEL_BUILDS = 1
 # Tracing output mode?  0/1 (from --trace-fst/--trace-saif/--trace-vcd)
 VM_TRACE = 1
 # Tracing output mode in FST format?  0/1 (from --trace-fst)
@@ -27,6 +27,7 @@ VM_TRACE_VCD = 1
 VM_CLASSES_FAST += \
 	Valu_tb \
 	Valu_tb___024root__DepSet_h4cc5cbec__0 \
+	Valu_tb___024root__DepSet_h4cc5cbec__1 \
 	Valu_tb___024root__DepSet_h0ecdb284__0 \
 	Valu_tb__main \
 

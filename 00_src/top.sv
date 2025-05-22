@@ -3,6 +3,7 @@
 module top
 (
     input   logic           clk, rst,
+    output  logic           Ecall, Ebreak,
     output  logic   [31:0]  WriteData, DataAddr,
     output  logic           MemWrite
 );
@@ -14,6 +15,8 @@ processor proc
 (
     .clk            (clk),
     .rst            (rst),
+    .Ecall          (Ecall),
+    .Ebreak         (Ebreak),
 
     .i_InstrF       (InstrF),
     .o_pcF          (pcF),
