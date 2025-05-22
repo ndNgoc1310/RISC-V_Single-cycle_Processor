@@ -5,20 +5,20 @@
 // The class here is then constructed to instantiate the design.
 // See the Verilator manual for examples.
 
-#ifndef VERILATED_VTESTBENCH_H_
-#define VERILATED_VTESTBENCH_H_  // guard
+#ifndef VERILATED_VALU_TB_H_
+#define VERILATED_VALU_TB_H_  // guard
 
 #include "verilated.h"
 
-class Vtestbench__Syms;
-class Vtestbench___024root;
+class Valu_tb__Syms;
+class Valu_tb___024root;
 class VerilatedVcdC;
 
 // This class is the main interface to the Verilated model
-class alignas(VL_CACHE_LINE_BYTES) Vtestbench VL_NOT_FINAL : public VerilatedModel {
+class alignas(VL_CACHE_LINE_BYTES) Valu_tb VL_NOT_FINAL : public VerilatedModel {
   private:
     // Symbol table holding complete model state (owned by this class)
-    Vtestbench__Syms* const vlSymsp;
+    Valu_tb__Syms* const vlSymsp;
 
   public:
 
@@ -29,8 +29,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vtestbench VL_NOT_FINAL : public VerilatedMod
     // PORTS
     // The application code writes and reads these signals to
     // propagate new values into/out from the Verilated model.
-    VL_IN8(&clk,0,0);
-    VL_IN8(&rst,0,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
@@ -38,19 +36,19 @@ class alignas(VL_CACHE_LINE_BYTES) Vtestbench VL_NOT_FINAL : public VerilatedMod
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.
-    Vtestbench___024root* const rootp;
+    Valu_tb___024root* const rootp;
 
     // CONSTRUCTORS
     /// Construct the model; called by application code
     /// If contextp is null, then the model will use the default global context
     /// If name is "", then makes a wrapper with a
     /// single model invisible with respect to DPI scope names.
-    explicit Vtestbench(VerilatedContext* contextp, const char* name = "TOP");
-    explicit Vtestbench(const char* name = "TOP");
+    explicit Valu_tb(VerilatedContext* contextp, const char* name = "TOP");
+    explicit Valu_tb(const char* name = "TOP");
     /// Destroy the model; called (often implicitly) by application code
-    virtual ~Vtestbench();
+    virtual ~Valu_tb();
   private:
-    VL_UNCOPYABLE(Vtestbench);  ///< Copying not allowed
+    VL_UNCOPYABLE(Valu_tb);  ///< Copying not allowed
 
   public:
     // API METHODS

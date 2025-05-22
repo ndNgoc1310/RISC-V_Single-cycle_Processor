@@ -24,8 +24,7 @@
 ./../../01_bench/testbench.sv
 ./../../01_bench/alu_tb.sv
 ./conf.vlt
--top alu_tb
-
+-top testbench
 
 
 

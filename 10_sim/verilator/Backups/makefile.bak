@@ -1,4 +1,4 @@
-TOP=alu_tb
+TOP=testbench
 SEED=1
 
 all: sim run
@@ -28,7 +28,7 @@ lint:
 # 	verilator $(FLAGS) $(TARGET)
 sim:
 	@echo "-> SIMULATION"
-	verilator --cc $(FLAGS) $(TARGET) --exe alu_tb.cpp
+	verilator --cc $(FLAGS) $(TARGET) --exe testbench.cpp
 	@make -C obj_dir -f V$(TOP).mk V$(TOP)
 
 .PHONY: run
@@ -44,7 +44,6 @@ wave:
 clean:
 	@echo "-> CLEAN"
 	@rm -rf ./obj_dir *.vcd
-
 
 
 

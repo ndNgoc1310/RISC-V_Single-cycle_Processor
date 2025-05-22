@@ -1,24 +1,24 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Symbol table implementation internals
 
-#include "Vtestbench__pch.h"
-#include "Vtestbench.h"
-#include "Vtestbench___024root.h"
+#include "Valu_tb__pch.h"
+#include "Valu_tb.h"
+#include "Valu_tb___024root.h"
 
 // FUNCTIONS
-Vtestbench__Syms::~Vtestbench__Syms()
+Valu_tb__Syms::~Valu_tb__Syms()
 {
 #ifdef VM_TRACE
     if (__Vm_dumping) _traceDumpClose();
 #endif  // VM_TRACE
 }
 
-void Vtestbench__Syms::_traceDump() {
+void Valu_tb__Syms::_traceDump() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumperp->dump(VL_TIME_Q());
 }
 
-void Vtestbench__Syms::_traceDumpOpen() {
+void Valu_tb__Syms::_traceDumpOpen() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     if (VL_UNLIKELY(!__Vm_dumperp)) {
         __Vm_dumperp = new VerilatedVcdC();
@@ -29,13 +29,13 @@ void Vtestbench__Syms::_traceDumpOpen() {
     }
 }
 
-void Vtestbench__Syms::_traceDumpClose() {
+void Valu_tb__Syms::_traceDumpClose() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumping = false;
     VL_DO_CLEAR(delete __Vm_dumperp, __Vm_dumperp = nullptr);
 }
 
-Vtestbench__Syms::Vtestbench__Syms(VerilatedContext* contextp, const char* namep, Vtestbench* modelp)
+Valu_tb__Syms::Valu_tb__Syms(VerilatedContext* contextp, const char* namep, Valu_tb* modelp)
     : VerilatedSyms{contextp}
     // Setup internal state of the Syms class
     , __Vm_modelp{modelp}
@@ -43,7 +43,7 @@ Vtestbench__Syms::Vtestbench__Syms(VerilatedContext* contextp, const char* namep
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(130);
+        Verilated::stackCheck(186);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-12);
     _vm_contextp__->timeprecision(-12);
