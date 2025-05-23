@@ -5,20 +5,20 @@
 // The class here is then constructed to instantiate the design.
 // See the Verilator manual for examples.
 
-#ifndef VERILATED_VEXTENDER_TB_H_
-#define VERILATED_VEXTENDER_TB_H_  // guard
+#ifndef VERILATED_VCONTROLLER_TB_H_
+#define VERILATED_VCONTROLLER_TB_H_  // guard
 
 #include "verilated.h"
 
-class Vextender_tb__Syms;
-class Vextender_tb___024root;
+class Vcontroller_tb__Syms;
+class Vcontroller_tb___024root;
 class VerilatedVcdC;
 
 // This class is the main interface to the Verilated model
-class alignas(VL_CACHE_LINE_BYTES) Vextender_tb VL_NOT_FINAL : public VerilatedModel {
+class alignas(VL_CACHE_LINE_BYTES) Vcontroller_tb VL_NOT_FINAL : public VerilatedModel {
   private:
     // Symbol table holding complete model state (owned by this class)
-    Vextender_tb__Syms* const vlSymsp;
+    Vcontroller_tb__Syms* const vlSymsp;
 
   public:
 
@@ -36,19 +36,19 @@ class alignas(VL_CACHE_LINE_BYTES) Vextender_tb VL_NOT_FINAL : public VerilatedM
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.
-    Vextender_tb___024root* const rootp;
+    Vcontroller_tb___024root* const rootp;
 
     // CONSTRUCTORS
     /// Construct the model; called by application code
     /// If contextp is null, then the model will use the default global context
     /// If name is "", then makes a wrapper with a
     /// single model invisible with respect to DPI scope names.
-    explicit Vextender_tb(VerilatedContext* contextp, const char* name = "TOP");
-    explicit Vextender_tb(const char* name = "TOP");
+    explicit Vcontroller_tb(VerilatedContext* contextp, const char* name = "TOP");
+    explicit Vcontroller_tb(const char* name = "TOP");
     /// Destroy the model; called (often implicitly) by application code
-    virtual ~Vextender_tb();
+    virtual ~Vcontroller_tb();
   private:
-    VL_UNCOPYABLE(Vextender_tb);  ///< Copying not allowed
+    VL_UNCOPYABLE(Vcontroller_tb);  ///< Copying not allowed
 
   public:
     // API METHODS

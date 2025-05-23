@@ -1,24 +1,24 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Symbol table implementation internals
 
-#include "Vextender_tb__pch.h"
-#include "Vextender_tb.h"
-#include "Vextender_tb___024root.h"
+#include "Vcontroller_tb__pch.h"
+#include "Vcontroller_tb.h"
+#include "Vcontroller_tb___024root.h"
 
 // FUNCTIONS
-Vextender_tb__Syms::~Vextender_tb__Syms()
+Vcontroller_tb__Syms::~Vcontroller_tb__Syms()
 {
 #ifdef VM_TRACE
     if (__Vm_dumping) _traceDumpClose();
 #endif  // VM_TRACE
 }
 
-void Vextender_tb__Syms::_traceDump() {
+void Vcontroller_tb__Syms::_traceDump() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumperp->dump(VL_TIME_Q());
 }
 
-void Vextender_tb__Syms::_traceDumpOpen() {
+void Vcontroller_tb__Syms::_traceDumpOpen() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     if (VL_UNLIKELY(!__Vm_dumperp)) {
         __Vm_dumperp = new VerilatedVcdC();
@@ -29,13 +29,13 @@ void Vextender_tb__Syms::_traceDumpOpen() {
     }
 }
 
-void Vextender_tb__Syms::_traceDumpClose() {
+void Vcontroller_tb__Syms::_traceDumpClose() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumping = false;
     VL_DO_CLEAR(delete __Vm_dumperp, __Vm_dumperp = nullptr);
 }
 
-Vextender_tb__Syms::Vextender_tb__Syms(VerilatedContext* contextp, const char* namep, Vextender_tb* modelp)
+Vcontroller_tb__Syms::Vcontroller_tb__Syms(VerilatedContext* contextp, const char* namep, Vcontroller_tb* modelp)
     : VerilatedSyms{contextp}
     // Setup internal state of the Syms class
     , __Vm_modelp{modelp}
@@ -43,7 +43,7 @@ Vextender_tb__Syms::Vextender_tb__Syms(VerilatedContext* contextp, const char* n
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(234);
+        Verilated::stackCheck(525);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-9);
     _vm_contextp__->timeprecision(-12);

@@ -15,8 +15,8 @@ assign  RtypeSub = funct7b5 & opb5;  // TRUE for R–type subtract, FALSE for ad
 
 always_comb
     case(ALUOp)
-        2'b00:                      ALUControlD = 3'b0000; // addition
-        2'b01:                      ALUControlD = 3'b0001; // subtraction
+        2'b00:                      ALUControlD = 4'b0000; // addition
+        2'b01:                      ALUControlD = 4'b0001; // subtraction
         2'b10: 
             case(funct3) // R-type or I-type ALU 
                 3'b000:  

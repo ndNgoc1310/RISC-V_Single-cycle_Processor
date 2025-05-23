@@ -23,15 +23,19 @@
 ./../../00_src/shifter_r_a_nb.sv
 ./../../00_src/shifter_r_l_nb.sv
 ./../../00_src/shifter_l_l_nb.sv
+./../../00_src/branchdec.sv
+./../../00_src/sysdec.sv
 ./../../00_src/top.sv
 
 ./../../01_bench/alu_tb.sv
 ./../../01_bench/F_stage_tb.sv
 ./../../01_bench/reg_file_tb.sv
 ./../../01_bench/extender_tb.sv
+./../../01_bench/controller_tb.sv
 
 ./conf.vlt
--top extender_tb
+-top controller_tb
+
 
 
 

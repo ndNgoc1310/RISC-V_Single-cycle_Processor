@@ -23,7 +23,7 @@ always_comb
         7'b1100011: controls = 13'b0_010_00_0_00_1_01_0; // B-type:      beq, bne, blt, bge, bltu, bgeu
         7'b1101111: controls = 13'b1_011_00_0_10_0_00_1; // jal
         7'b1100111: controls = 13'b1_000_01_0_10_0_00_1; // jalr
-        7'b0110111: controls = 13'b1_100_x1_0_00_0_11_0; // lui
+        7'b0110111: controls = 13'b1_100_01_0_00_0_11_0; // lui
         7'b0010111: controls = 13'b1_100_11_0_00_0_11_0; // auipc
         7'b1110011: controls = 13'b0_xxx_00_0_00_0_00_0; // ecall, ebreak
         default:    controls = 13'bx_xxx_xx_x_xx_x_xx_x; // illegal op

@@ -7,6 +7,7 @@ module controller
     input   logic           funct7b5,
     input   logic           ZeroE, BranchE, JumpE, ALUResultEb0,
     input   logic   [11:0]  funct12,
+
     output  logic   [1:0]   ResultSrcD, ALUSrcD,
     output  logic           MemWriteD,
     output  logic           PCSrcE,
@@ -22,42 +23,41 @@ maindec md
 (
     .op             (op),
     .RegWriteD      (RegWriteD),
-    .JumpD          (JumpD),
-    .BranchD        (BranchD), 
-    .MemWriteD      (MemWriteD),
-    .ALUSrcD        (ALUSrcD),
-    .ResultSrcD     (ResultSrcD),
     .ImmSrcD        (ImmSrcD),
-    .ALUOp          (ALUOp)
+    .ALUSrcD        (ALUSrcD), 
+    .MemWriteD      (MemWriteD),
+    .ResultSrcD     (ResultSrcD),
+    .BranchD        (BranchD),
+    .ALUOp          (ALUOp),
+    .JumpD          (JumpD)
 );
 
 aludec ad
 (
-    .opb5           (op[5]),
-    .funct3         (funct3),
-    .funct7b5       (funct7b5),
     .ALUOp          (ALUOp),
+    .funct3         (funct3),
+    .opb5           (op[5]),
+    .funct7b5       (funct7b5),
     .ALUSrcDb1      (ALUSrcD[1]),
     .ALUControlD    (ALUControlD)
 );
 
-// Branch conditions for different instructions
-always_comb 
-begin
-    case(funct3)
-        3'b000:  PCSrcE = ZeroE;            // beq:  branch if equal (zero=1)
-        3'b001:  PCSrcE = ~ZeroE;           // bne:  branch if not equal (zero=0)
-        3'b100:  PCSrcE = ALUResultEb0;     // blt:  branch if less than (slt=1)
-        3'b101:  PCSrcE = ~ALUResultEb0;    // bge:  branch if greater/equal (slt=0)
-        3'b110:  PCSrcE = ALUResultEb0;     // bltu: branch if less than unsigned (sltu=1)
-        3'b111:  PCSrcE = ~ALUResultEb0;    // bgeu: branch if greater/equal unsigned (sltu=0)
-        default: PCSrcE = 1'b0;
-    endcase
-end
+branchdec bd
+(
+    .op             (op),
+    .funct3         (funct3),
+    .ZeroE          (ZeroE),
+    .ALUResultEb0   (ALUResultEb0),
+    .PCSrcE         (PCSrcE)
+);
 
-// Decode SYSTEM instructions
-assign Ecall =  (op == 7'b1110011) && (funct12 == 12'b000000000000);
-assign Ebreak = (op == 7'b1110011) && (funct12 == 12'b000000000001);
+sysdec sd
+(
+    .op             (op),
+    .funct12        (funct12),
+    .Ecall          (Ecall),
+    .Ebreak         (Ebreak)
+);
 
 endmodule:controller
 
