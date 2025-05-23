@@ -25,10 +25,12 @@
 ./../../00_src/shifter_l_l_nb.sv
 ./../../00_src/top.sv
 
-./../../01_bench/testbench.sv
 ./../../01_bench/alu_tb.sv
+./../../01_bench/F_stage_tb.sv
+
 ./conf.vlt
--top alu_tb
+-top F_stage_tb
+
 
 
 

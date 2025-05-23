@@ -32,14 +32,14 @@ dmem dm
 (
     .clk           (clk),
     .we            (MemWriteM),
-    .a             (ALUResultM[5:0]),
+    .a             (ALUResultM),
     .wd            (WriteDataM),
     .rd            (ReadDataM)
 );
 
 imem im
 (
-    .a              (pcF[5:0]),
+    .a              (pcF),
     .rd             (InstrF)
 );
 

@@ -162,7 +162,7 @@ begin
 end
 
 // Multiplexers
-mux_2 #(.WIDTH(32)) PCmux
+mux_2 #(.WIDTH(32)) mux_2
 (
     .d0    (PCPlus4F),
     .d1    (PCTargetE),
