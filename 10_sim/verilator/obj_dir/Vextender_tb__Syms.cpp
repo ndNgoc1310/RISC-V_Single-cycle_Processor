@@ -43,7 +43,7 @@ Vextender_tb__Syms::Vextender_tb__Syms(VerilatedContext* contextp, const char* n
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(251);
+        Verilated::stackCheck(234);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-9);
     _vm_contextp__->timeprecision(-12);

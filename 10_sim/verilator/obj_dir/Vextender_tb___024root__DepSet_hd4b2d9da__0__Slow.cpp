@@ -32,8 +32,6 @@ VL_ATTR_COLD void Vextender_tb___024root___eval_initial__TOP(Vextender_tb___024r
     Vextender_tb__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    vlSelfRef.extender_tb__DOT____Vxrand_h8794da3b__0 
-        = VL_RAND_RESET_ASSIGN_I(32);
     vlSelfRef.extender_tb__DOT__dut__DOT____Vxrand_h8794da3b__0 
         = VL_RAND_RESET_ASSIGN_I(32);
 }
@@ -165,7 +163,6 @@ VL_ATTR_COLD void Vextender_tb___024root___ctor_var_reset(Vextender_tb___024root
     Vextender_tb__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    vlSelf->extender_tb__DOT____Vxrand_h8794da3b__0 = VL_RAND_RESET_I(32);
     vlSelf->extender_tb__DOT__instr = VL_RAND_RESET_I(25);
     vlSelf->extender_tb__DOT__immsrc = VL_RAND_RESET_I(3);
     vlSelf->extender_tb__DOT__immext = VL_RAND_RESET_I(32);

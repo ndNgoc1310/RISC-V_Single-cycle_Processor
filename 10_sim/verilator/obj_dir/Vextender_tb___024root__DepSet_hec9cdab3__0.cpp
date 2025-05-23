@@ -98,13 +98,6 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
     IData/*31:0*/ __Vtask_extender_tb__DOT__run_test__12__exp_immext;
     __Vtask_extender_tb__DOT__run_test__12__exp_immext = 0;
     std::string __Vtask_extender_tb__DOT__run_test__12__test_name;
-    IData/*24:0*/ __Vtask_extender_tb__DOT__run_test__13__in_instr;
-    __Vtask_extender_tb__DOT__run_test__13__in_instr = 0;
-    CData/*2:0*/ __Vtask_extender_tb__DOT__run_test__13__in_immsrc;
-    __Vtask_extender_tb__DOT__run_test__13__in_immsrc = 0;
-    IData/*31:0*/ __Vtask_extender_tb__DOT__run_test__13__exp_immext;
-    __Vtask_extender_tb__DOT__run_test__13__exp_immext = 0;
-    std::string __Vtask_extender_tb__DOT__run_test__13__test_name;
     // Body
     vlSymsp->_vm_contextp__->dumpfile(std::string{"wave.vcd"});
     vlSymsp->_traceDumpOpen();
@@ -773,7 +766,7 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
     vlSelfRef.extender_tb__DOT__immsrc = 1U;
     __Vtask_extender_tb__DOT__run_test__5__test_name = 
         std::string{"S-type negative small"};
-    __Vtask_extender_tb__DOT__run_test__5__exp_immext = 0xfffffffcU;
+    __Vtask_extender_tb__DOT__run_test__5__exp_immext = 0xffffffe4U;
     __Vtask_extender_tb__DOT__run_test__5__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__5__in_instr 
@@ -1040,7 +1033,7 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
     vlSelfRef.extender_tb__DOT__immsrc = 2U;
     __Vtask_extender_tb__DOT__run_test__7__test_name = 
         std::string{"B-type negative small"};
-    __Vtask_extender_tb__DOT__run_test__7__exp_immext = 0xfffffffcU;
+    __Vtask_extender_tb__DOT__run_test__7__exp_immext = 0xfffff7e4U;
     __Vtask_extender_tb__DOT__run_test__7__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__7__in_instr 
@@ -1170,11 +1163,11 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
                                                   + vlSelfRef.extender_tb__DOT__fail_count);
     }
     VL_WRITEF_NX("\n----------- J-type Tests -----------\n",0);
-    vlSelfRef.extender_tb__DOT__instr = 0x100U;
+    vlSelfRef.extender_tb__DOT__instr = 0x12600U;
     vlSelfRef.extender_tb__DOT__immsrc = 3U;
     __Vtask_extender_tb__DOT__run_test__8__test_name = 
         std::string{"J-type positive small"};
-    __Vtask_extender_tb__DOT__run_test__8__exp_immext = 8U;
+    __Vtask_extender_tb__DOT__run_test__8__exp_immext = 0x30808U;
     __Vtask_extender_tb__DOT__run_test__8__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__8__in_instr 
@@ -1303,11 +1296,11 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
         vlSelfRef.extender_tb__DOT__fail_count = ((IData)(1U) 
                                                   + vlSelfRef.extender_tb__DOT__fail_count);
     }
-    vlSelfRef.extender_tb__DOT__instr = 0x1000100U;
+    vlSelfRef.extender_tb__DOT__instr = 0x1ff2380U;
     vlSelfRef.extender_tb__DOT__immsrc = 3U;
     __Vtask_extender_tb__DOT__run_test__9__test_name = 
         std::string{"J-type negative small"};
-    __Vtask_extender_tb__DOT__run_test__9__exp_immext = 0xfffffff8U;
+    __Vtask_extender_tb__DOT__run_test__9__exp_immext = 0xfff1cff8U;
     __Vtask_extender_tb__DOT__run_test__9__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__9__in_instr 
@@ -1441,7 +1434,7 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
     vlSelfRef.extender_tb__DOT__immsrc = 4U;
     __Vtask_extender_tb__DOT__run_test__10__test_name = 
         std::string{"U-type small positive"};
-    __Vtask_extender_tb__DOT__run_test__10__exp_immext = 0x1000U;
+    __Vtask_extender_tb__DOT__run_test__10__exp_immext = 0x100000U;
     __Vtask_extender_tb__DOT__run_test__10__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__10__in_instr 
@@ -1570,11 +1563,11 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
         vlSelfRef.extender_tb__DOT__fail_count = ((IData)(1U) 
                                                   + vlSelfRef.extender_tb__DOT__fail_count);
     }
-    vlSelfRef.extender_tb__DOT__instr = 0x1ffff00U;
+    vlSelfRef.extender_tb__DOT__instr = 0x1ffe000U;
     vlSelfRef.extender_tb__DOT__immsrc = 4U;
     __Vtask_extender_tb__DOT__run_test__11__test_name = 
         std::string{"U-type maximum"};
-    __Vtask_extender_tb__DOT__run_test__11__exp_immext = 0xfffff000U;
+    __Vtask_extender_tb__DOT__run_test__11__exp_immext = 0xfff00000U;
     __Vtask_extender_tb__DOT__run_test__11__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__11__in_instr 
@@ -1704,12 +1697,11 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
                                                   + vlSelfRef.extender_tb__DOT__fail_count);
     }
     VL_WRITEF_NX("\n----------- Edge Cases -----------\n",0);
-    vlSelfRef.extender_tb__DOT__instr = 0U;
-    vlSelfRef.extender_tb__DOT__immsrc = 7U;
+    vlSelfRef.extender_tb__DOT__instr = 0x1ffe000U;
+    vlSelfRef.extender_tb__DOT__immsrc = 0U;
     __Vtask_extender_tb__DOT__run_test__12__test_name = 
-        std::string{"Invalid immsrc"};
-    __Vtask_extender_tb__DOT__run_test__12__exp_immext 
-        = vlSelfRef.extender_tb__DOT____Vxrand_h8794da3b__0;
+        std::string{"All ones valid format"};
+    __Vtask_extender_tb__DOT__run_test__12__exp_immext = 0xffffffffU;
     __Vtask_extender_tb__DOT__run_test__12__in_immsrc 
         = vlSelfRef.extender_tb__DOT__immsrc;
     __Vtask_extender_tb__DOT__run_test__12__in_instr 
@@ -1838,139 +1830,6 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
         vlSelfRef.extender_tb__DOT__fail_count = ((IData)(1U) 
                                                   + vlSelfRef.extender_tb__DOT__fail_count);
     }
-    vlSelfRef.extender_tb__DOT__instr = 0xfff000U;
-    vlSelfRef.extender_tb__DOT__immsrc = 0U;
-    __Vtask_extender_tb__DOT__run_test__13__test_name = 
-        std::string{"All ones valid format"};
-    __Vtask_extender_tb__DOT__run_test__13__exp_immext = 0xffffffffU;
-    __Vtask_extender_tb__DOT__run_test__13__in_immsrc 
-        = vlSelfRef.extender_tb__DOT__immsrc;
-    __Vtask_extender_tb__DOT__run_test__13__in_instr 
-        = vlSelfRef.extender_tb__DOT__instr;
-    vlSelfRef.extender_tb__DOT__test_num = ((IData)(1U) 
-                                            + vlSelfRef.extender_tb__DOT__test_num);
-    vlSelfRef.extender_tb__DOT__instr = __Vtask_extender_tb__DOT__run_test__13__in_instr;
-    vlSelfRef.extender_tb__DOT__immsrc = __Vtask_extender_tb__DOT__run_test__13__in_immsrc;
-    co_await vlSelfRef.__VdlySched.delay(0x3e8ULL, 
-                                         nullptr, "../../01_bench/extender_tb.sv", 
-                                         34);
-    vlSelfRef.__Vm_traceActivity[2U] = 1U;
-    if ((vlSelfRef.extender_tb__DOT__immext == __Vtask_extender_tb__DOT__run_test__13__exp_immext)) {
-        VL_WRITEF_NX("%02d \342\234\205PASSED %@\n",0,
-                     32,vlSelfRef.extender_tb__DOT__test_num,
-                     -1,&(__Vtask_extender_tb__DOT__run_test__13__test_name));
-        if ((4U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            if (VL_UNLIKELY(((2U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))))) {
-                VL_WRITEF_NX("        instr=%b (invalid format)\n",0,
-                             25,vlSelfRef.extender_tb__DOT__instr);
-            } else if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-                VL_WRITEF_NX("        instr=%b (invalid format)\n",0,
-                             25,vlSelfRef.extender_tb__DOT__instr);
-            } else {
-                VL_WRITEF_NX("        instr={imm[31:12]}_{rd} = %b_%b\n",0,
-                             20,(0xfffffU & (vlSelfRef.extender_tb__DOT__instr 
-                                             >> 5U)),
-                             5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-            }
-        } else if ((2U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-                VL_WRITEF_NX("        instr={imm[20|10:1|11|19:12]}_{rd} = %b_%b\n",0,
-                             20,(0xfffffU & (vlSelfRef.extender_tb__DOT__instr 
-                                             >> 5U)),
-                             5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-            } else {
-                VL_WRITEF_NX("        instr={imm[12|10:5]}_{rs2}_{rs1}_{f3}_{imm[4:1|11]} = %b_%b_%b_%b_%b\n",0,
-                             7,(0x7fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 0x12U)),
-                             5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 0xdU)),
-                             5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 8U)),3,
-                             (7U & (vlSelfRef.extender_tb__DOT__instr 
-                                    >> 5U)),5,(0x1fU 
-                                               & vlSelfRef.extender_tb__DOT__instr));
-            }
-        } else if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            VL_WRITEF_NX("        instr={imm[11:5]}_{rs2}_{rs1}_{f3}_{imm[4:0]} = %b_%b_%b_%b_%b\n",0,
-                         7,(0x7fU & (vlSelfRef.extender_tb__DOT__instr 
-                                     >> 0x12U)),5,(0x1fU 
-                                                   & (vlSelfRef.extender_tb__DOT__instr 
-                                                      >> 0xdU)),
-                         5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                     >> 8U)),3,(7U 
-                                                & (vlSelfRef.extender_tb__DOT__instr 
-                                                   >> 5U)),
-                         5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-        } else {
-            VL_WRITEF_NX("        instr={imm[11:0]}_{other bits} = %b_%b\n",0,
-                         12,(0xfffU & (vlSelfRef.extender_tb__DOT__instr 
-                                       >> 0xdU)),13,
-                         (0x1fffU & vlSelfRef.extender_tb__DOT__instr));
-        }
-        VL_WRITEF_NX("        immsrc=%b\n        immext=%b\n",0,
-                     3,vlSelfRef.extender_tb__DOT__immsrc,
-                     32,vlSelfRef.extender_tb__DOT__immext);
-        vlSelfRef.extender_tb__DOT__pass_count = ((IData)(1U) 
-                                                  + vlSelfRef.extender_tb__DOT__pass_count);
-    } else {
-        VL_WRITEF_NX("%02d \342\235\214FAILED %@\n",0,
-                     32,vlSelfRef.extender_tb__DOT__test_num,
-                     -1,&(__Vtask_extender_tb__DOT__run_test__13__test_name));
-        if ((4U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            if (VL_UNLIKELY(((2U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))))) {
-                VL_WRITEF_NX("        instr=%b (invalid format)\n",0,
-                             25,vlSelfRef.extender_tb__DOT__instr);
-            } else if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-                VL_WRITEF_NX("        instr=%b (invalid format)\n",0,
-                             25,vlSelfRef.extender_tb__DOT__instr);
-            } else {
-                VL_WRITEF_NX("        instr={imm[31:12]}_{rd} = %b_%b\n",0,
-                             20,(0xfffffU & (vlSelfRef.extender_tb__DOT__instr 
-                                             >> 5U)),
-                             5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-            }
-        } else if ((2U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-                VL_WRITEF_NX("        instr={imm[20|10:1|11|19:12]}_{rd} = %b_%b\n",0,
-                             20,(0xfffffU & (vlSelfRef.extender_tb__DOT__instr 
-                                             >> 5U)),
-                             5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-            } else {
-                VL_WRITEF_NX("        instr={imm[12|10:5]}_{rs2}_{rs1}_{f3}_{imm[4:1|11]} = %b_%b_%b_%b_%b\n",0,
-                             7,(0x7fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 0x12U)),
-                             5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 0xdU)),
-                             5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                         >> 8U)),3,
-                             (7U & (vlSelfRef.extender_tb__DOT__instr 
-                                    >> 5U)),5,(0x1fU 
-                                               & vlSelfRef.extender_tb__DOT__instr));
-            }
-        } else if ((1U & (IData)(vlSelfRef.extender_tb__DOT__immsrc))) {
-            VL_WRITEF_NX("        instr={imm[11:5]}_{rs2}_{rs1}_{f3}_{imm[4:0]} = %b_%b_%b_%b_%b\n",0,
-                         7,(0x7fU & (vlSelfRef.extender_tb__DOT__instr 
-                                     >> 0x12U)),5,(0x1fU 
-                                                   & (vlSelfRef.extender_tb__DOT__instr 
-                                                      >> 0xdU)),
-                         5,(0x1fU & (vlSelfRef.extender_tb__DOT__instr 
-                                     >> 8U)),3,(7U 
-                                                & (vlSelfRef.extender_tb__DOT__instr 
-                                                   >> 5U)),
-                         5,(0x1fU & vlSelfRef.extender_tb__DOT__instr));
-        } else {
-            VL_WRITEF_NX("        instr={imm[11:0]}_{other bits} = %b_%b\n",0,
-                         12,(0xfffU & (vlSelfRef.extender_tb__DOT__instr 
-                                       >> 0xdU)),13,
-                         (0x1fffU & vlSelfRef.extender_tb__DOT__instr));
-        }
-        VL_WRITEF_NX("        Expected: immext=%b\n        Actual:   immext=%b\n        immsrc=%b\n",0,
-                     32,__Vtask_extender_tb__DOT__run_test__13__exp_immext,
-                     32,vlSelfRef.extender_tb__DOT__immext,
-                     3,(IData)(vlSelfRef.extender_tb__DOT__immsrc));
-        vlSelfRef.extender_tb__DOT__fail_count = ((IData)(1U) 
-                                                  + vlSelfRef.extender_tb__DOT__fail_count);
-    }
     VL_WRITEF_NX("\n===== Test Statistics =====\nTotal Tests:  %0d\n\342\234\205 Tests Passed: %0d (%0.1f%%)\n\342\235\214 Tests Failed: %0d (%0.1f%%)\n===========================\n\n",0,
                  32,vlSelfRef.extender_tb__DOT__test_num,
                  32,vlSelfRef.extender_tb__DOT__pass_count,
@@ -1979,7 +1838,7 @@ VL_INLINE_OPT VlCoroutine Vextender_tb___024root___eval_initial__TOP__Vtiming__0
                  32,vlSelfRef.extender_tb__DOT__fail_count,
                  64,((100.0 * VL_ISTOR_D_I(32, vlSelfRef.extender_tb__DOT__fail_count)) 
                      / VL_ISTOR_D_I(32, vlSelfRef.extender_tb__DOT__test_num)));
-    VL_FINISH_MT("../../01_bench/extender_tb.sv", 178, "");
+    VL_FINISH_MT("../../01_bench/extender_tb.sv", 180, "");
     vlSelfRef.__Vm_traceActivity[2U] = 1U;
 }
 

@@ -102,71 +102,73 @@ initial begin
 
     // Test 1: I-type Instructions
     $display("\n----------- I-type Tests -----------");
-    // Case 1.1: Positive small number
-    instr = 25'b0000000000100_00000_000_00000; immsrc = 3'b000;
-    run_test(instr, immsrc, 32'h00000004, "I-type positive small");
+
+    // Positive small number
+    instr = 25'b000000000100_00000_000_00000; immsrc = 3'b000;
+    /* 1  */ run_test(instr, immsrc, 32'b00000000000000000000_000000000100, "I-type positive small");
     
-    // Case 1.2: Negative small number
-    instr = 25'b1111_1111_1100_00000_000_00000; immsrc = 3'b000;
-    run_test(instr, immsrc, 32'hFFFFFFFC, "I-type negative small");
+    // Negative small number
+    instr = 25'b111111111100_00000_000_00000; immsrc = 3'b000;
+    /* 2  */ run_test(instr, immsrc, 32'b11111111111111111111_111111111100, "I-type negative small");
     
-    // Case 1.3: Maximum positive
-    instr = 25'b0111_1111_1111_00000_000_00000; immsrc = 3'b000;
-    run_test(instr, immsrc, 32'h000007FF, "I-type max positive");
+    // Maximum positive
+    instr = 25'b011111111111_00000_000_00000; immsrc = 3'b000;
+    /* 3  */ run_test(instr, immsrc, 32'b00000000000000000000_011111111111, "I-type max positive");
     
-    // Case 1.4: Maximum negative
+    // Maximum negative
     instr = 25'b1000_0000_0000_00000_000_00000; immsrc = 3'b000;
-    run_test(instr, immsrc, 32'hFFFFF800, "I-type max negative");
+    /* 4  */ run_test(instr, immsrc, 32'b11111111111111111111_100000000000, "I-type max negative");
 
     // Test 2: S-type Instructions
     $display("\n----------- S-type Tests -----------");
-    // Case 2.1: Positive small number (imm = 4)
-    instr = 25'b0000000_00000_00000_000_00100; immsrc = 3'b001;  // imm[11:5]=0, imm[4:0]=4
-    run_test(instr, immsrc, 32'h00000004, "S-type positive small");
-    
-    // Case 2.2: Negative small number (imm = -4)
-    instr = 25'b1111111_00000_00000_000_00100; immsrc = 3'b001;  // imm[11:5]=1's, imm[4:0]=4
-    run_test(instr, immsrc, 32'hFFFFFFFC, "S-type negative small");
 
+    // Positive small number
+    instr = 25'b0000000_00000_00000_000_00100; immsrc = 3'b001;
+    /* 5  */ run_test(instr, immsrc, 32'b00000000000000000000_0000000_00100, "S-type positive small");
+    
+    // Negative small number
+    instr = 25'b1111111_00000_00000_000_00100; immsrc = 3'b001;
+    /* 6  */ run_test(instr, immsrc, 32'b11111111111111111111_1111111_00100, "S-type negative small");
+                                
     // Test 3: B-type Instructions
     $display("\n----------- B-type Tests -----------");
-    // Case 3.1: Positive small offset (imm = 4)
-    instr = 25'b0000000_00000_00000_000_00100; immsrc = 3'b010;  // imm[12|10:5]=0, imm[4:1|11]=2
-    run_test(instr, immsrc, 32'h00000004, "B-type positive small");
+
+    // Positive small offset
+    instr = 25'b0_000000_00000_00000_000_0010_0; immsrc = 3'b010;
+    /* 7  */ run_test(instr, immsrc, 32'b00000000000000000000_0_000000_0010_0, "B-type positive small");
     
-    // Case 3.2: Negative small offset (imm = -4)
-    instr = 25'b1111111_00000_00000_000_00100; immsrc = 3'b010;  // imm[12|10:5]=1's, imm[4:1|11]=2
-    run_test(instr, immsrc, 32'hFFFFFFFC, "B-type negative small");
+    // Negative small offset
+    instr = 25'b1_111111_00000_00000_000_0010_0; immsrc = 3'b010;
+    /* 8  */ run_test(instr, immsrc, 32'b11111111111111111111_0_111111_0010_0, "B-type negative small");
 
     // Test 4: J-type Instructions
     $display("\n----------- J-type Tests -----------");
-    // Case 4.1: Positive small offset (imm = 8)
-    instr = 25'b0000000_00000_00001_00000000; immsrc = 3'b011;   // imm[20|10:1|11|19:12]=8
-    run_test(instr, immsrc, 32'h00000008, "J-type positive small");
+
+    // Positive small offset
+    instr = 25'b0_0000000100_1_00110000_00000; immsrc = 3'b011;
+    /* 9  */ run_test(instr, immsrc, 32'b000000000000_00110000_1_0000000100_0, "J-type positive small");
     
-    // Case 4.2: Negative small offset (imm = -8)
-    instr = 25'b1000000_00000_00001_00000000; immsrc = 3'b011;   // imm[20|10:1|11|19:12]=-8
-    run_test(instr, immsrc, 32'hFFFFFFF8, "J-type negative small");
+    // Negative small offset
+    instr = 25'b1_1111111100_1_00011100_00000; immsrc = 3'b011;
+    /* 10 */ run_test(instr, immsrc, 32'b111111111111_00011100_1_1111111100_0, "J-type negative small");
 
     // Test 5: U-type Instructions
     $display("\n----------- U-type Tests -----------");
-    // Case 5.1: Small positive number (imm = 0x1000)
-    instr = 25'b0000000_00001_00000_00000000; immsrc = 3'b100;   // imm[31:12]=0x1
-    run_test(instr, immsrc, 32'h00001000, "U-type small positive");
-    
-    // Case 5.2: Maximum value
-    instr = 25'b1111111_11111_11111_00000000; immsrc = 3'b100;   // imm[31:12]=0xFFFFF
-    run_test(instr, immsrc, 32'hFFFFF000, "U-type maximum");
+
+    // Small positive number
+    instr = 25'b00000000000100000000_00000; immsrc = 3'b100;
+    /* 11 */ run_test(instr, immsrc, 32'b00000000000100000000_000000000000, "U-type small positive");
+                                         
+    // Maximum value 
+    instr = 25'b11111111111100000000_00000; immsrc = 3'b100;
+    /* 12 */ run_test(instr, immsrc, 32'b11111111111100000000_000000000000, "U-type maximum");
 
     // Test 6: Invalid/Edge Cases
     $display("\n----------- Edge Cases -----------");
-    // Case 6.1: Invalid immsrc
-    instr = 25'b0000_0000_0000_0000_0000_0000; immsrc = 3'b111;
-    run_test(instr, immsrc, 32'hxxxxxxxx, "Invalid immsrc");
-    
-    // Case 6.2: All ones in valid format
-    instr = 25'b1111_1111_1111_0000_0000_0000; immsrc = 3'b000;
-    run_test(instr, immsrc, 32'hFFFFFFFF, "All ones valid format");
+
+    // All ones in valid format (I-type)
+    instr = 25'b111111111111_00000_000_00000; immsrc = 3'b000;
+    /* 13 */ run_test(instr, immsrc, 32'b11111111111111111111_111111111111, "All ones valid format");
 
     // Display test statistics
     $display("\n===== Test Statistics =====");

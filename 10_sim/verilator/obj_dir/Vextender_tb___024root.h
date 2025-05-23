@@ -18,7 +18,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vextender_tb___024root final : public Verilat
     CData/*2:0*/ extender_tb__DOT__immsrc;
     CData/*0:0*/ __VstlFirstIteration;
     CData/*0:0*/ __VactContinue;
-    IData/*31:0*/ extender_tb__DOT____Vxrand_h8794da3b__0;
     IData/*24:0*/ extender_tb__DOT__instr;
     IData/*31:0*/ extender_tb__DOT__immext;
     IData/*31:0*/ extender_tb__DOT__test_num;
