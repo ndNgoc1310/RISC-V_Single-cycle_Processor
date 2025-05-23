@@ -2,9 +2,9 @@
 # DESCRIPTION: Verilator output: Makefile for building Verilated archive or executable
 #
 # Execute this makefile from the object directory:
-#    make -f VF_stage_tb.mk
+#    make -f Vextender_tb.mk
 
-default: VF_stage_tb
+default: Vextender_tb
 
 ### Constants...
 # Perl executable (from $PERL, defaults to 'perl' if not set)
@@ -32,9 +32,9 @@ VM_SC_TARGET_ARCH = linux
 
 ### Vars...
 # Design prefix (from --prefix)
-VM_PREFIX = VF_stage_tb
+VM_PREFIX = Vextender_tb
 # Module prefix (from --prefix)
-VM_MODPREFIX = VF_stage_tb
+VM_MODPREFIX = Vextender_tb
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
 	-std=gnu++20 \
@@ -53,7 +53,7 @@ VM_USER_DIR = \
 
 ### Default rules...
 # Include list of all generated classes
-include VF_stage_tb_classes.mk
+include Vextender_tb_classes.mk
 # Include global rules
 include $(VERILATOR_ROOT)/include/verilated.mk
 
@@ -62,7 +62,7 @@ VPATH += $(VM_USER_DIR)
 
 
 ### Link rules... (from --exe)
-VF_stage_tb: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
+Vextender_tb: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
 	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) $(LIBS) $(SC_LIBS) -o $@
 
 

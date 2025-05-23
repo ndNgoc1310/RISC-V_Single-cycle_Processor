@@ -27,9 +27,12 @@
 
 ./../../01_bench/alu_tb.sv
 ./../../01_bench/F_stage_tb.sv
+./../../01_bench/reg_file_tb.sv
 
 ./conf.vlt
--top alu_tb
+-top reg_file_tb
+
+
 
 
 

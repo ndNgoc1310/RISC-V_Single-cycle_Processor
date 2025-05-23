@@ -1,4 +1,4 @@
-TOP=F_stage_tb
+TOP=extender_tb
 SEED=1
 
 all: clean lint sim
@@ -32,7 +32,7 @@ sim:
 # 	verilator $(FLAGS) $(TARGET)
 
 # 	@echo "-> SIMULATION"
-# 	verilator --cc $(FLAGS) $(TARGET) --exe F_stage_tb.cpp
+# 	verilator --cc $(FLAGS) $(TARGET) --exe extender_tb.cpp
 # 	@make -C obj_dir -f V$(TOP).mk V$(TOP)
 
 	@echo "" && echo "🚀 [SIM] Building simulation & Executing testbench..."
@@ -63,6 +63,8 @@ wave:
 clean:
 	@echo "" && echo "🧹 [CLEAN] Cleaning build and waveform files..."
 	@rm -rf ./obj_dir *.vcd *.gtkw
+
+
 
 
 

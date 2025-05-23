@@ -2,7 +2,7 @@
 // DESCRIPTION: main() calling loop, created with Verilator --main
 
 #include "verilated.h"
-#include "VF_stage_tb.h"
+#include "Vextender_tb.h"
 
 //======================
 
@@ -14,7 +14,7 @@ int main(int argc, char** argv, char**) {
     contextp->commandArgs(argc, argv);
 
     // Construct the Verilated model, from Vtop.h generated from Verilating
-    const std::unique_ptr<VF_stage_tb> topp{new VF_stage_tb{contextp.get(), ""}};
+    const std::unique_ptr<Vextender_tb> topp{new Vextender_tb{contextp.get(), ""}};
 
     // Simulate until $finish
     while (VL_LIKELY(!contextp->gotFinish())) {
