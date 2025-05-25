@@ -3,18 +3,27 @@
 module controller_tb;
 
 // Signals
-logic [6:0]    op;
-logic [2:0]    funct3;
-logic          funct7b5;
+logic [6:0]    opD;
+logic [2:0]    funct3D;
+logic          funct7Db5;
 logic          ZeroE, BranchE, JumpE, ALUResultEb0;
-logic [11:0]   funct12;
+logic [11:0]   funct12D;
 logic [1:0]    ResultSrcD, ALUSrcD;
 logic          MemWriteD;
 logic          PCSrcE;
 logic          RegWriteD, JumpD, BranchD;
 logic [2:0]    ImmSrcD;
+logic [4:0]    MemSrcD; // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
 logic [3:0]    ALUControlD;
 logic          Ecall, Ebreak;
+
+// Inputs to mask don't care bits
+logic [2:0]    mask_ImmSrcD = '1;
+logic [1:0]    mask_ALUSrcD = '1;
+logic [1:0]    mask_ResultSrcD = '1;
+logic [3:0]    mask_ALUControlD = '1;
+logic [4:0]    mask_MemSrcD = '1; // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
+
 
 // DUT instantiation
 controller dut (.*);
@@ -26,12 +35,22 @@ int fail_count = 0;
 
 // Task for checking results
 task run_test(
-    input logic [6:0]    in_op,
-    input logic [2:0]    in_funct3,
-    input logic          in_funct7b5,
+    input logic [6:0]    in_opD,
+    input logic [2:0]    in_funct3D,
+    input logic          in_funct7Db5,
 
     input logic          in_ZeroE, in_BranchE, in_JumpE, in_ALUResultEb0,
-    input logic [11:0]   in_funct12,
+    input logic [11:0]   in_funct12D,
+
+    // Add mask parameters for values that might have don't cares
+    // Default all bits care
+    // No mask for RegWriteD, MemWriteD, JumpD, BranchD, PCSrcE, Ecall, Ebreak since they must not have don't cares
+    input logic [2:0]    in_mask_ImmSrcD,
+    input logic [1:0]    in_mask_ALUSrcD,
+    input logic [1:0]    in_mask_ResultSrcD,
+    input logic [3:0]    in_mask_ALUControlD,
+    input logic [4:0]    in_mask_MemSrcD = '1, // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
+
     
     input logic          exp_RegWriteD,
     input logic [2:0]    exp_ImmSrcD,
@@ -44,53 +63,62 @@ task run_test(
     input logic          exp_PCSrcE,
     input logic          exp_Ecall,
     input logic          exp_Ebreak,
+    input logic [4:0]    exp_MemSrcD, // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
     input string         test_name
 );
     test_num++;
     
     // Set inputs
-    op = in_op;
-    funct3 = in_funct3;
-    funct7b5 = in_funct7b5;
+    opD = in_opD;
+    funct3D = in_funct3D;
+    funct7Db5 = in_funct7Db5;
     ZeroE = in_ZeroE;
     BranchE = in_BranchE;
     JumpE = in_JumpE;
     ALUResultEb0 = in_ALUResultEb0;
-    funct12 = in_funct12;
+    funct12D = in_funct12D;
+
+    in_mask_ImmSrcD = mask_ImmSrcD;
+    in_mask_ALUSrcD = mask_ALUSrcD;
+    in_mask_ResultSrcD = mask_ResultSrcD;
+    in_mask_ALUControlD = mask_ALUControlD;
+    in_mask_MemSrcD = mask_MemSrcD;
+
     #1;
 
     if ((RegWriteD === exp_RegWriteD) &&
-        ((op == 7'b0110011 || op == 7'b1110011) || ImmSrcD === exp_ImmSrcD) && // Skip ImmSrc check for R-type (op=0110011) and system instructions (op=1110011)
-        (ALUSrcD == exp_ALUSrcD) && 
+        (ImmSrcD & mask_ImmSrcD) === (exp_ImmSrcD & mask_ImmSrcD) &&
+        (ALUSrcD & mask_ALUSrcD) === (exp_ALUSrcD & mask_ALUSrcD) && 
         (MemWriteD === exp_MemWriteD) &&
-        (ResultSrcD === exp_ResultSrcD) && 
+        (ResultSrcD & mask_ResultSrcD) === (exp_ResultSrcD & mask_ResultSrcD) && 
         (BranchD === exp_BranchD) &&
         (JumpD === exp_JumpD) &&
-        (ALUControlD === exp_ALUControlD) &&
+        (ALUControlD & mask_ALUControlD) === (exp_ALUControlD & mask_ALUControlD) &&
         (PCSrcE === exp_PCSrcE) &&
         (Ecall === exp_Ecall) &&
+        (MemSrcD & mask_MemSrcD) === (exp_MemSrcD & mask_MemSrcD) &&
         (Ebreak === exp_Ebreak)) begin
         
         $display("%02d ✅PASSED %s", test_num, test_name);
-        $display("        op=%b funct3=%b funct7b5=%b", op, funct3, funct7b5);
+        $display("        opD=%b funct3D=%b funct7Db5=%b", opD, funct3D, funct7Db5);
         $display("        ZeroE=%b BranchE=%b JumpE=%b ALUResultEb0=%b", 
                 ZeroE, BranchE, JumpE, ALUResultEb0);
         pass_count++;
     end else begin
         $display("%02d ❌FAILED %s", test_num, test_name);
         $display("        Inputs:");
-        $display("        op=%b funct3=%b funct7b5=%b", op, funct3, funct7b5);
+        $display("        opD=%b funct3D=%b funct7Db5=%b", opD, funct3D, funct7Db5);
         $display("        ZeroE=%b BranchE=%b JumpE=%b ALUResultEb0=%b", 
                 ZeroE, BranchE, JumpE, ALUResultEb0);
-        $display("        funct12=%b", funct12);
+        $display("        funct12D=%b", funct12D);
         $display("        Expected:");
-        $display("        RegWrite=%b ImmSrc=%b ALUSrc=%b MemWrite=%b ResultSrc=%b Branch=%b Jump=%b ALUControl=%b PCSrc=%b Ecall=%b Ebreak=%b",
+        $display("        RegWrite=%b ImmSrc=%b ALUSrc=%b MemWrite=%b ResultSrc=%b Branch=%b Jump=%b ALUControl=%b PCSrc=%b Ecall=%b Ebreak=%b MemSrcD=%b",
                 exp_RegWriteD, exp_ImmSrcD, exp_ALUSrcD, exp_MemWriteD, 
-                exp_ResultSrcD, exp_BranchD, exp_JumpD, exp_ALUControlD, exp_PCSrcE, exp_Ecall, exp_Ebreak);
+                exp_ResultSrcD, exp_BranchD, exp_JumpD, exp_ALUControlD, exp_PCSrcE, exp_Ecall, exp_Ebreak, exp_MemSrcD);
         $display("        Actual:");
-        $display("        RegWrite=%b ImmSrc=%b ALUSrc=%b MemWrite=%b ResultSrc=%b Branch=%b Jump=%b ALUControl=%b PCSrc=%b Ecall=%b Ebreak=%b",
+        $display("        RegWrite=%b ImmSrc=%b ALUSrc=%b MemWrite=%b ResultSrc=%b Branch=%b Jump=%b ALUControl=%b PCSrc=%b Ecall=%b Ebreak=%b MemSrcD=%b",
                 RegWriteD, ImmSrcD, ALUSrcD, MemWriteD, 
-                ResultSrcD, BranchD, JumpD, ALUControlD, PCSrcE, Ecall, Ebreak);
+                ResultSrcD, BranchD, JumpD, ALUControlD, PCSrcE, Ecall, Ebreak, MemSrcD);
         fail_count++;
     end
 endtask
@@ -105,9 +133,14 @@ initial begin
     $display("\n----------- R-type Instructions -----------");
     
     // ADD
-    op = 7'b0110011; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 1  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0110011; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 1  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'bxxx,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -119,12 +152,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "R-type ADD");
 
     // SUB
-    op = 7'b0110011; funct3 = 3'b000; funct7b5 = 1'b1;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 2  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0110011; funct3D = 3'b000; funct7Db5 = 1'b1;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 2  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'bxxx,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -136,12 +175,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "R-type SUB");
 
     // SLL
-    op = 7'b0110011; funct3 = 3'b001; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 3  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0110011; funct3D = 3'b001; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 3  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'bxxx,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -153,12 +198,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "R-type SLL");
 
     // SLT
-    op = 7'b0110011; funct3 = 3'b010; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 4  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0110011; funct3D = 3'b010; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 4  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'bxxx,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -170,15 +221,21 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "R-type SLT");
 
     // Test 2: I-type ALU Instructions
     $display("\n----------- I-type ALU Instructions -----------");
     
     // ADDI
-    op = 7'b0010011; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 5  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0010011; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 5  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b000,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -190,12 +247,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "I-type ADDI");
 
     // SLTI
-    op = 7'b0010011; funct3 = 3'b010; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 6  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0010011; funct3D = 3'b010; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 6  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b000,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -207,15 +270,21 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "I-type SLTI");
 
     // Test 3: Load/Store Instructions
     $display("\n----------- Load/Store Instructions -----------");
     
     // LW
-    op = 7'b0000011; funct3 = 3'b010; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 7  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0000011; funct3D = 3'b010; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '1;
+    /* 7  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b000,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -227,12 +296,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'b00100,  // MemSrcD
                       "Load LW");
 
     // SW
-    op = 7'b0100011; funct3 = 3'b010; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 8  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0100011; funct3D = 3'b010; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '1;
+    /* 8  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
                       3'b001,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -244,15 +319,21 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'b00100,  // MemSrcD
                       "Store SW");
 
     // Test 4: Branch Instructions
     $display("\n----------- Branch Instructions -----------");
     
     // BEQ (Taken)
-    op = 7'b1100011; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b1; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 9  */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1100011; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b1; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 9  */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
                       3'b010,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -264,12 +345,18 @@ initial begin
                       1'b1,      // PCSrcE = ZeroE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Branch BEQ Taken");
 
     // BEQ (Not Taken)
-    op = 7'b1100011; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 10 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1100011; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 10 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
                       3'b010,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -281,12 +368,18 @@ initial begin
                       1'b0,      // PCSrcE = ZeroE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Branch BEQ Not Taken");
 
     // BLT (Taken)
-    op = 7'b1100011; funct3 = 3'b100; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b1; funct12 = 12'b0;
-    /* 11 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1100011; funct3D = 3'b100; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b1; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 11 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
                       3'b010,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -298,12 +391,18 @@ initial begin
                       1'b1,      // PCSrcE = ALUResultEb0
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Branch BLT Taken");
 
     // BLT (Not Taken)
-    op = 7'b1100011; funct3 = 3'b100; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 12 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1100011; funct3D = 3'b100; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b1; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 12 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
                       3'b010,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -315,15 +414,21 @@ initial begin
                       1'b0,      // PCSrcE = ALUResultEb0
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Branch BLT Not Taken");
 
     // Test 5: Jump Instructions
     $display("\n----------- Jump Instructions -----------");
     
     // JAL
-    op = 7'b1101111; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b1; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 13 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1101111; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b1; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 13 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b011,    // ImmSrcD
                       2'b00,     // ALUSrcD
@@ -335,12 +440,18 @@ initial begin
                       1'b1,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Jump JAL");
 
     // JALR
-    op = 7'b1100111; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b1; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 14 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b1100111; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b1; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 14 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b000,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -352,15 +463,21 @@ initial begin
                       1'b1,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Jump JALR");
 
     // Test 6: Upper Immediate Instructions
     $display("\n----------- Upper Immediate Instructions -----------");
     
     // LUI
-    op = 7'b0110111; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 15 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0110111; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 15 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b100,    // ImmSrcD
                       2'b01,     // ALUSrcD
@@ -372,12 +489,18 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Upper LUI");
 
     // AUIPC
-    op = 7'b0010111; funct3 = 3'b000; funct7b5 = 1'b0;
-    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12 = 12'b0;
-    /* 16 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    opD = 7'b0010111; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; funct12D = 12'b0;
+    mask_ImmSrcD = '1;
+    mask_ALUSrcD = '1;
+    mask_ResultSrcD = '1;
+    mask_ALUControlD = '1;
+    mask_MemSrcD = '0;
+    /* 16 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b1,      // RegWriteD
                       3'b100,    // ImmSrcD
                       2'b11,     // ALUSrcD
@@ -389,46 +512,84 @@ initial begin
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "Upper AUIPC");
 
     // Test 7: System Instructions
     $display("\n----------- System Instructions -----------");
     
     // ECALL
-    op = 7'b1110011; funct3 = 3'b000; funct7b5 = 1'b0;
+    opD = 7'b1110011; funct3D = 3'b000; funct7Db5 = 1'b0;
     ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0;
-    funct12 = 12'b000000000000;
-    /* 17 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    funct12D = 12'b000000000000;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '0;
+    mask_ResultSrcD = '0;
+    mask_ALUControlD = '0;
+    mask_MemSrcD = '0;
+    /* 17 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
-                      3'bxxx,    // ImmSrcD
-                      2'b00,     // ALUSrcD
+                      3'bx,      // ImmSrcD
+                      2'bx,      // ALUSrcD
                       1'b0,      // MemWriteD
-                      2'b00,     // ResultSrcD
+                      2'bx,      // ResultSrcD
                       1'b0,      // BranchD
                       1'b0,      // JumpD
-                      4'b0000,   // ALUControlD
+                      4'bx,      // ALUControlD
                       1'b0,      // PCSrcE
                       1'b1,      // Ecall
                       1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
                       "System ECALL");
 
     // EBREAK
-    op = 7'b1110011; funct3 = 3'b000; funct7b5 = 1'b0;
+    opD = 7'b1110011; funct3D = 3'b000; funct7Db5 = 1'b0;
     ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0;
-    funct12 = 12'b000000000001;
-    /* 18 */ run_test(op, funct3, funct7b5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12,
+    funct12D = 12'b000000000001;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '0;
+    mask_ResultSrcD = '0;
+    mask_ALUControlD = '0;
+    mask_MemSrcD = '0;
+    /* 18 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
                       1'b0,      // RegWriteD
-                      3'bxxx,    // ImmSrcD
-                      2'b00,     // ALUSrcD
+                      3'bx,      // ImmSrcD
+                      2'bx,      // ALUSrcD
                       1'b0,      // MemWriteD
-                      2'b00,     // ResultSrcD
+                      2'bx,      // ResultSrcD
                       1'b0,      // BranchD
                       1'b0,      // JumpD
-                      4'b0000,   // ALUControlD
+                      4'bx,      // ALUControlD
                       1'b0,      // PCSrcE
                       1'b0,      // Ecall
                       1'b1,      // Ebreak
+                      5'bx,      // MemSrcD
                       "System EBREAK");
+
+    // Reset Test
+    $display("\n----------- Reset Test -----------");
+    opD = 7'b0000000; funct3D = 3'b000; funct7Db5 = 1'b0;
+    ZeroE = 1'b0; BranchE = 1'b0; JumpE = 1'b0; ALUResultEb0 = 1'b0; 
+    funct12D = 12'b0;
+    mask_ImmSrcD = '0;
+    mask_ALUSrcD = '0;
+    mask_ResultSrcD = '0;
+    mask_ALUControlD = '0;
+    mask_MemSrcD = '0;
+    /* 19 */ run_test(opD, funct3D, funct7Db5, ZeroE, BranchE, JumpE, ALUResultEb0, funct12D, mask_ImmSrcD, mask_ALUSrcD, mask_ResultSrcD, mask_ALUControlD, mask_MemSrcD,
+                      1'b0,      // RegWriteD
+                      3'bx,      // ImmSrcD
+                      2'bx,      // ALUSrcD
+                      1'b0,      // MemWriteD
+                      2'bx,      // ResultSrcD
+                      1'b0,      // BranchD
+                      1'b0,      // JumpD
+                      4'bx,      // ALUControlD
+                      1'b0,      // PCSrcE
+                      1'b0,      // Ecall
+                      1'b0,      // Ebreak
+                      5'bx,      // MemSrcD
+                      "Reset state");
 
     // Display test statistics
     $display("\n===== Test Statistics =====");

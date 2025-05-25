@@ -2,6 +2,10 @@
 
 module processor
 (
+    // Debugging: Add debug ports for regfile
+    input  logic [4:0]  i_debug_addr,
+    output logic [31:0] o_debug_data,
+    
     // System signals
     input   logic           clk, rst,
     output  logic           Ecall, Ebreak,
@@ -9,12 +13,10 @@ module processor
     // Data path - Instruction Memory
     input   logic   [31:0]  i_InstrF,
     output  logic   [31:0]  o_pcF,
-    
-    // Controller - Data Memory
-    output  logic           o_MemWriteM,
 
     // Data path - Data Memory
     input   logic   [31:0]  i_ReadDataM,
+    output  logic           o_MemWriteM,
     output  logic   [31:0]  o_ALUResultM, o_WriteDataM
 );
 
@@ -23,12 +25,12 @@ logic           RegWriteD, MemWriteD, JumpD, BranchD;
 logic   [3:0]   ALUControlD;
 logic   [1:0]   ResultSrcD, ALUSrcD;
 logic   [2:0]   ImmSrcD;
+logic   [4:0]   MemSrcD; // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
 
-
-logic   [6:0]   op;
-logic   [14:12] funct3;
-logic           funct7b5;
-logic   [11:0]  funct12;
+logic   [6:0]   opD;
+logic   [14:12] funct3D;
+logic           funct7Db5;
+logic   [11:0]  funct12D;
 
 logic           ResultSrcEb0;
 logic           PCSrcE;
@@ -61,10 +63,10 @@ assign ReadDataM = i_ReadDataM;
 
 controller ctrl
 (
-    .op             (op),
-    .funct3         (funct3),
-    .funct7b5       (funct7b5),
-    .funct12        (funct12),
+    .opD            (opD),
+    .funct3D        (funct3D),
+    .funct7Db5      (funct7Db5),
+    .funct12D       (funct12D),
     .ZeroE          (ZeroE),
     .BranchE        (BranchE),
     .JumpE          (JumpE),
@@ -77,6 +79,7 @@ controller ctrl
     .JumpD          (JumpD),
     .BranchD        (BranchD),
     .ImmSrcD        (ImmSrcD),
+    .MemSrcD        (MemSrcD),
     .ALUControlD    (ALUControlD),
     .Ecall          (Ecall),
     .Ebreak         (Ebreak)
@@ -84,6 +87,10 @@ controller ctrl
 
 data_path dp
 (
+    // Debugging regfile
+    .i_debug_addr   (i_debug_addr),
+    .o_debug_data   (o_debug_data),
+    
     // System signals
     .clk            (clk),
     .rst            (rst),
@@ -97,10 +104,11 @@ data_path dp
     .ALUControlD    (ALUControlD),
     .ResultSrcD     (ResultSrcD),
     .ImmSrcD        (ImmSrcD),
-    .op             (op),
-    .funct3         (funct3),
-    .funct7b5       (funct7b5),
-    .funct12        (funct12),
+    .MemSrcD        (MemSrcD),
+    .opD            (opD),
+    .funct3D        (funct3D),
+    .funct7Db5      (funct7Db5),
+    .funct12D       (funct12D),
 
     .PCSrcE         (PCSrcE),
     .JumpE          (JumpE),

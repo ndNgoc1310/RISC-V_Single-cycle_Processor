@@ -2,6 +2,10 @@
 
 module top
 (
+    // Debugging regfile
+    input  logic [4:0]  i_debug_addr,
+    output logic [31:0] o_debug_data,
+
     input   logic           clk, rst,
     output  logic           Ecall, Ebreak,
     output  logic   [31:0]  WriteData, DataAddr,
@@ -13,6 +17,10 @@ logic           MemWriteM;
 
 processor proc
 (
+    // Debugging regfile
+    .i_debug_addr   (i_debug_addr),
+    .o_debug_data   (o_debug_data),
+    
     .clk            (clk),
     .rst            (rst),
     .Ecall          (Ecall),
@@ -21,14 +29,13 @@ processor proc
     .i_InstrF       (InstrF),
     .o_pcF          (pcF),
 
-    .o_MemWriteM    (MemWriteM),
-
     .i_ReadDataM    (ReadDataM),
+    .o_MemWriteM    (MemWriteM),
     .o_ALUResultM   (ALUResultM),
     .o_WriteDataM   (WriteDataM)    
 );
 
-dmem dm
+d_mem dm
 (
     .clk           (clk),
     .we            (MemWriteM),
@@ -37,7 +44,7 @@ dmem dm
     .rd            (ReadDataM)
 );
 
-imem im
+i_mem im
 (
     .a              (pcF),
     .rd             (InstrF)

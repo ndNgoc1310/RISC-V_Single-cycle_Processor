@@ -2,6 +2,10 @@
 
 module reg_file
 (
+    // Debugging: Add debug ports
+    input  logic [4:0]  i_debug_addr,
+    output logic [31:0] o_debug_data,
+    
     input   logic   clk, rst,
     input   logic   [4:0] i_rd_addr_0, i_rd_addr_1,
     input   logic   [4:0] i_wr_addr,
@@ -24,7 +28,7 @@ wire signed [31:0] x01,x02,x03,x04,x05,x06,x07,x08,x09,x10,x11,x12,x13,x14,x15,x
 logic [31:0] i_wr_ens; // separate enable for each register (x00 is always 0, so no need to write to it).
 
 // Read Data 0 (Behavioural)
-always_ff @(negedge clk, posedge rst) 
+always_ff @(posedge clk, posedge rst) 
 begin
     if (rst)    o_rd_dat_0 <= 32'd0;
     else
@@ -66,7 +70,7 @@ begin
 end
 
 // Read Data 1 (Behavioural)
-always_ff @(negedge clk, posedge rst)
+always_ff @(posedge clk, posedge rst)
 begin
     if (rst)    o_rd_dat_1 <= 32'd0;
     else
@@ -149,6 +153,46 @@ flop_r #(32) r_x29(.clk(clk), .rst(rst), .q(x29), .d(i_wr_dat), .en(i_wr_ens[29]
 flop_r #(32) r_x30(.clk(clk), .rst(rst), .q(x30), .d(i_wr_dat), .en(i_wr_ens[30]), .clr(1'b0));
 flop_r #(32) r_x31(.clk(clk), .rst(rst), .q(x31), .d(i_wr_dat), .en(i_wr_ens[31]), .clr(1'b0));
 
+// Debugging: Debug read port
+always_ff @(negedge clk, posedge rst) 
+begin
+    if (rst)    o_debug_data <= 32'd0;
+    else
+        case(i_debug_addr)
+            5'd00 : o_debug_data <= x00;
+            5'd01 : o_debug_data <= x01;
+            5'd02 : o_debug_data <= x02;
+            5'd03 : o_debug_data <= x03;
+            5'd04 : o_debug_data <= x04;
+            5'd05 : o_debug_data <= x05;
+            5'd06 : o_debug_data <= x06;
+            5'd07 : o_debug_data <= x07;
+            5'd08 : o_debug_data <= x08;
+            5'd09 : o_debug_data <= x09;
+            5'd10 : o_debug_data <= x10;
+            5'd11 : o_debug_data <= x11;
+            5'd12 : o_debug_data <= x12;
+            5'd13 : o_debug_data <= x13;
+            5'd14 : o_debug_data <= x14;
+            5'd15 : o_debug_data <= x15;
+            5'd16 : o_debug_data <= x16;
+            5'd17 : o_debug_data <= x17;
+            5'd18 : o_debug_data <= x18;
+            5'd19 : o_debug_data <= x19;
+            5'd20 : o_debug_data <= x20;
+            5'd21 : o_debug_data <= x21;
+            5'd22 : o_debug_data <= x22;
+            5'd23 : o_debug_data <= x23;
+            5'd24 : o_debug_data <= x24;
+            5'd25 : o_debug_data <= x25;
+            5'd26 : o_debug_data <= x26;
+            5'd27 : o_debug_data <= x27;
+            5'd28 : o_debug_data <= x28;
+            5'd29 : o_debug_data <= x29;
+            5'd30 : o_debug_data <= x30;
+            5'd31 : o_debug_data <= x31;
+        endcase
+end
 
 // // Aliases (helpful for debugging assembly);
 // `ifdef SIMULATION

@@ -2,26 +2,28 @@
 
 module controller
 (
-    input   logic   [6:0]   op,
-    input   logic   [2:0]   funct3,
-    input   logic           funct7b5,
-    input   logic           ZeroE, BranchE, JumpE, ALUResultEb0,
-    input   logic   [11:0]  funct12,
+    input   logic   [6:0]   opD,
+    input   logic   [2:0]   funct3D,
+    input   logic           funct7Db5,
+    input   logic   [11:0]  funct12D,
 
-    output  logic   [1:0]   ResultSrcD, ALUSrcD,
-    output  logic           MemWriteD,
-    output  logic           PCSrcE,
-    output  logic           RegWriteD, JumpD, BranchD,
-    output  logic   [2:0]   ImmSrcD,
+    input   logic           ZeroE, BranchE, JumpE, ALUResultEb0,
+
+    output  logic           RegWriteD, MemWriteD, JumpD, BranchD,
     output  logic   [3:0]   ALUControlD,
+    output  logic   [1:0]   ResultSrcD, ALUSrcD,
+    output  logic   [2:0]   ImmSrcD,
+    output  logic   [4:0]   MemSrcD, // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
+    
+    output  logic           PCSrcE,
     output  logic           Ecall, Ebreak
 );
 
 logic   [1:0]   ALUOp;
 
-maindec md
+main_dec md
 (
-    .op             (op),
+    .opD            (opD),
     .RegWriteD      (RegWriteD),
     .ImmSrcD        (ImmSrcD),
     .ALUSrcD        (ALUSrcD), 
@@ -32,31 +34,38 @@ maindec md
     .JumpD          (JumpD)
 );
 
-aludec ad
+alu_dec ad
 (
     .ALUOp          (ALUOp),
-    .funct3         (funct3),
-    .opb5           (op[5]),
-    .funct7b5       (funct7b5),
+    .funct3D        (funct3D),
+    .opDb5          (opD[5]),
+    .funct7Db5      (funct7Db5),
     .ALUSrcDb1      (ALUSrcD[1]),
     .ALUControlD    (ALUControlD)
 );
 
-branchdec bd
+br_dec bd
 (
-    .op             (op),
-    .funct3         (funct3),
+    .funct3D        (funct3D),
     .ZeroE          (ZeroE),
+    .BranchE        (BranchE),
+    .JumpE          (JumpE),
     .ALUResultEb0   (ALUResultEb0),
     .PCSrcE         (PCSrcE)
 );
 
-sysdec sd
+sys_dec sd
 (
-    .op             (op),
-    .funct12        (funct12),
+    .opD            (opD),
+    .funct12D       (funct12D),
     .Ecall          (Ecall),
     .Ebreak         (Ebreak)
+);
+
+mem_dec memd
+(
+    .funct3D    (funct3D),
+    .MemSrcD    (MemSrcD)   // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
 );
 
 endmodule:controller

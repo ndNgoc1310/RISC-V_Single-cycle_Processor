@@ -3,6 +3,10 @@
 module reg_file_tb;
 
 // Signals
+// Debugging
+logic [4:0]  i_debug_addr;
+logic [31:0] o_debug_data;
+
 logic           clk, rst;
 logic   [4:0]   i_rd_addr_0, i_rd_addr_1;
 logic   [4:0]   i_wr_addr;
@@ -18,6 +22,10 @@ end
 
 // DUT instantiation
 reg_file dut (
+    // Debugging
+    .i_debug_addr (i_debug_addr),
+    .o_debug_data (o_debug_data),
+
     .clk(clk),
     .rst(rst),
     .i_rd_addr_0(i_rd_addr_0),
