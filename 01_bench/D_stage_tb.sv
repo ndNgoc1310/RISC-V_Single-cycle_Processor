@@ -3,9 +3,9 @@
 module D_stage_tb;
 
 // Debugging
-logic [4:0]  i_debug_addr;
-logic [31:0] o_debug_data;
-logic [31:0] mask_o_debug_data;
+logic [4:0]  top_regfile_addr;
+logic [31:0] top_regfile_data;
+logic [31:0] mask_top_regfile_data;
 
 
 // Inputs
@@ -20,7 +20,7 @@ logic           BranchE;        // From Execute stage
 logic           JumpE;          // From Execute stage
 logic           ALUResultEb0;   // From Execute stage
 logic           RegWriteW;      // From Writeback stage
-logic   [4:0]   RdW;           // From Writeback stage
+logic   [4:0]   RdW;            // From Writeback stage
 logic   [31:0]  ResultW;        // From Writeback stage
 
 // Inputs to mask don't care bits
@@ -33,8 +33,6 @@ logic [4:0]   mask_Rs1D = '1;
 logic [4:0]   mask_Rs2D = '1;
 logic [4:0]   mask_RdD = '1;
 logic [31:0]  mask_ImmExtD = '1;
-logic [4:0]   mask_MemSrcD = '1; // MemSrcD = {membD, memhD, memwD, membuD, memhuD}
-
 
 // Internal pipeline registers
 logic   [31:0]  InstrD;
@@ -45,7 +43,6 @@ logic   [2:0]   funct3D;
 logic           funct7Db5;
 logic   [11:0]  funct12D;
 logic   [2:0]   ImmSrcD;
-logic   [4:0]   MemSrcD; // MemSrcD = {membD, memhD, memwD, membuD, memhuD}
 logic           PCSrcE;
 
 // Outputs to be verified
@@ -76,8 +73,8 @@ flop_r #(.WIDTH(96)) Dreg (
 // Register file
 reg_file rf (
     // Debugging
-    .i_debug_addr (i_debug_addr),
-    .o_debug_data (o_debug_data),
+    .top_regfile_addr (top_regfile_addr),
+    .top_regfile_data (top_regfile_data),
 
     .clk            (~clk),
     .rst            (rst),
@@ -115,7 +112,6 @@ controller ctrl (
     .JumpD          (JumpD),
     .BranchD        (BranchD),
     .ImmSrcD        (ImmSrcD),
-    .MemSrcD        (MemSrcD),
     .ALUControlD    (ALUControlD),
     .Ecall          (Ecall),
     .Ebreak         (Ebreak)
@@ -152,7 +148,7 @@ task run_test(
     input logic [4:0]   in_RdW,
     input logic         in_RegWriteW,
     input logic [31:0]  in_ResultW,
-    /* Debugging */ input logic [4:0]   in_i_debug_addr,
+    /* Debugging */ input logic [4:0]   in_top_regfile_addr,
 
     // Add mask parameters for values that might have don't cares
     // Default all bits care
@@ -166,8 +162,7 @@ task run_test(
     input logic [4:0]   in_mask_Rs2D,
     input logic [4:0]   in_mask_RdD,
     input logic [31:0]  in_mask_ImmExtD,
-    input logic [4:0]   in_mask_MemSrcD = '1, // MemSrcD = {membD, memhD, memwD, membuD, memhuD}
-    /* Debugging */ input logic [31:0]  in_mask_o_debug_data,
+    /* Debugging */ input logic [31:0]  in_mask_top_regfile_data,
 
     // Expected outputs
     input logic [31:0]  exp_Read1D,
@@ -187,8 +182,7 @@ task run_test(
     input logic [31:0]  exp_PCPlus4D,
     input logic         exp_Ecall,
     input logic         exp_Ebreak,
-    input logic [4:0]   exp_MemSrcD, // MemSrcD = {membD, memhD, memwD, membuD, memhuD}
-    /* Debugging */ input logic [31:0]  exp_o_debug_data,
+    /* Debugging */ input logic [31:0]  exp_top_regfile_data,
     input string        test_name
 );
     test_num++;
@@ -206,7 +200,7 @@ task run_test(
     RdW = in_RdW;
     RegWriteW = in_RegWriteW;
     ResultW = in_ResultW;
-    /* Debugging */ i_debug_addr = in_i_debug_addr;
+    /* Debugging */ top_regfile_addr = in_top_regfile_addr;
 
     mask_Read1D = in_mask_Read1D;    
     mask_Read2D = in_mask_Read2D;
@@ -217,8 +211,7 @@ task run_test(
     mask_Rs2D = in_mask_Rs2D;
     mask_RdD = in_mask_RdD;
     mask_ImmExtD = in_mask_ImmExtD;
-    mask_MemSrcD = in_mask_MemSrcD;
-    /* Debugging */ mask_o_debug_data = in_mask_o_debug_data;
+    /* Debugging */ mask_top_regfile_data = in_mask_top_regfile_data;
 
     @(posedge clk); #1;
 
@@ -239,13 +232,12 @@ task run_test(
         (ImmExtD & mask_ImmExtD) === (exp_ImmExtD & mask_ImmExtD) &&
         (PCPlus4D === exp_PCPlus4D) &&
         (Ecall === exp_Ecall) &&
-        (MemSrcD & mask_MemSrcD) === (exp_MemSrcD & mask_MemSrcD) &&
-        /* Debugging */ (o_debug_data & mask_o_debug_data) === (exp_o_debug_data & mask_o_debug_data) &&
+        /* Debugging */ (top_regfile_data & mask_top_regfile_data) === (exp_top_regfile_data & mask_top_regfile_data) &&
         (Ebreak === exp_Ebreak)) begin
         
         $display("%02d ✅ %s", test_num, test_name);
         $display("    Instruction: %h", InstrF);
-        $display("    Register x%d: %h", i_debug_addr, o_debug_data);
+        $display("    Register x%d: %h", top_regfile_addr, top_regfile_data);
         pass_count++;
     end else begin
         $display("%02d ❌ %s", test_num, test_name);
@@ -276,10 +268,8 @@ task run_test(
                 &mask_RdD);
         $display("        mask_ImmExtD=%b",
                 &mask_ImmExtD);
-        $display("        mask_MemSrcD=%b",
-                &mask_MemSrcD);
-        // /* Debugging */ $display("        mask_o_debug_data=%b",
-        //         &mask_o_debug_data);
+        // /* Debugging */ $display("        mask_top_regfile_data=%b",
+        //         &mask_top_regfile_data);
         
                                                             $display("    Expected vs Actual:");
         if (&(mask_Read1D) != 1'b0)                         $display("        Read1D:      %h vs %h", exp_Read1D, Read1D);
@@ -299,8 +289,7 @@ task run_test(
                                                             $display("        PCPlus4D:    %h vs %h", exp_PCPlus4D, PCPlus4D);
                                                             $display("        Ecall:       %b vs %b", exp_Ecall, Ecall);
                                                             $display("        Ebreak:      %b vs %b", exp_Ebreak, Ebreak);
-        if (&(mask_MemSrcD) != 1'b0)                        $display("        MemSrcD:     %b vs %b", exp_MemSrcD, MemSrcD);
-        /* Debugging */ if (&(mask_o_debug_data) != 1'b0)   $display("        Register %d: %h vs %h", i_debug_addr,exp_o_debug_data, o_debug_data);
+        /* Debugging */ if (&(mask_top_regfile_data) != 1'b0)   $display("        Register %d: %h vs %h", top_regfile_addr,exp_top_regfile_data, top_regfile_data);
         fail_count++;
     end
 endtask
@@ -324,13 +313,12 @@ initial begin
     mask_ResultSrcD = '0; mask_ALUControlD = '0; mask_ALUSrcD = '0; 
     mask_Rs1D = '0; mask_Rs2D = '0; mask_RdD = '0; 
     mask_ImmExtD = '0;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
     
     #10;
 
-    /* 1  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 1  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'hx,     // Read1D (dont care)
                       32'hx,     // Read2D (dont care)
                       1'b0,      // RegWriteD (no reg write)
@@ -348,8 +336,7 @@ initial begin
                       32'h0,     // PCPlus4D (0, reset state)
                       1'b0,      // Ecall (not ECALL)
                       1'b0,      // Ebreak (not EBREAK)
-                      5'bx,      // MemSrcD
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "Reset state");
     rst = 0;
 
@@ -370,11 +357,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '1; mask_RdD = '0; 
     mask_ImmExtD = '0;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 2  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 2  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'h0,     // Read1D (data at x1) (all registers are initially 0)
                       32'h0,     // Read2D (data at x10) (all registers are initially 0)
                       1'b1,      // RegWriteD (reg write)
@@ -392,8 +378,7 @@ initial begin
                       32'h4,     // PCPlus4D (PCPlus4F)
                       1'b0,      // Ecall (not ECALL)
                       1'b0,      // Ebreak (not EBREAK)
-                      5'bx,      // MemSrcD
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "R-type ADD");
 
     // Test 2: I-type Instructions
@@ -410,11 +395,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '0; mask_RdD = '1; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 3  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 3  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'h0,     // Read1D (x1)
                       32'hx,     // Read2D (dont care)
                       1'b1,      // RegWriteD (reg write)
@@ -432,8 +416,7 @@ initial begin
                       32'h8,     // PCPlus4D (PCPlus4F)
                       1'b0,      // Ecall (not ECALL)
                       1'b0,      // Ebreak (not EBREAK)
-                      5'bx,      // MemSrcD (dont care)
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "I-type ADDI");
 
     // Test 3: Load/Store Instructions
@@ -450,11 +433,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '0; mask_RdD = '1; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '1;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 4  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 4  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'h0,     // Read1D (x1)
                       32'hx,     // Read2D (dont care)
                       1'b1,      // RegWriteD (reg write)
@@ -472,8 +454,7 @@ initial begin
                       32'hC,     // PCPlus4D (PCPlus4F)
                       1'b0,      // Ecall (not ECALL)
                       1'b0,      // Ebreak (not EBREAK)
-                      5'b00100,  // MemSrcD (word)
-                      32'hx,     // o_debug_data (Register data)
+                      32'hx,     // top_regfile_data (Register data)
                       "Load LW");
 
     // SW x4, 867(x1)
@@ -487,11 +468,10 @@ initial begin
     mask_ResultSrcD = '0; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '1; mask_RdD = '0; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '1;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 5  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 5  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'hx,     // Read1D (dont care)
                       32'hx,     // Read2D (dont care)
                       1'b0,      // RegWriteD (no reg write)
@@ -509,8 +489,7 @@ initial begin
                       32'h10,    // PCPlus4D (PCPlus4F)
                       1'b0,      // Ecall (not ECALL)
                       1'b0,      // Ebreak (not EBREAK)
-                      5'b00100,  // MemSrcD
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "Store SW");
 
     // Test 4: Branch Instructions
@@ -527,11 +506,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '1; mask_RdD = '0; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 6  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 6  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'hx,     // Read1D (x1)
                       32'hx,     // Read2D (x2)
                       1'b0,      // RegWriteD (no reg write)
@@ -549,8 +527,7 @@ initial begin
                       32'h14,    // PCPlus4D
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
-                      5'bx,      // MemSrcD (dont care)
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "Branch BEQ");
 
     // Test 5: Jump Instructions
@@ -567,11 +544,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '0; mask_Rs2D = '0; mask_RdD = '1; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 7  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 7  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'hx,     // Read1D (unused)
                       32'hx,     // Read2D (unused)
                       1'b1,      // RegWriteD
@@ -589,8 +565,7 @@ initial begin
                       32'h18,    // PCPlus4D
                       1'b0,      // Ecall
                       1'b0,      // Ebreak
-                      5'bx,      // MemSrcD
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "Jump JAL");
 
     // Test 6: System Instructions
@@ -605,11 +580,10 @@ initial begin
     mask_ResultSrcD = '1; mask_ALUControlD = '1; mask_ALUSrcD = '1; 
     mask_Rs1D = '1; mask_Rs2D = '1; mask_RdD = '1; 
     mask_ImmExtD = '1;
-    mask_MemSrcD = '0;
-    /* Debugging */ mask_o_debug_data = '0; i_debug_addr = 5'd1;
+    /* Debugging */ mask_top_regfile_data = '0; top_regfile_addr = 5'd1;
 
-    /* 8  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, i_debug_addr,
-                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_MemSrcD, mask_o_debug_data,
+    /* 8  */ run_test(InstrF, pcF, PCPlus4F, StallD, FlushD, ZeroE, BranchE, JumpE, ALUResultEb0, RdW, RegWriteW, ResultW, top_regfile_addr,
+                        mask_Read1D, mask_Read2D, mask_ResultSrcD, mask_ALUControlD, mask_ALUSrcD, mask_Rs1D, mask_Rs2D, mask_RdD, mask_ImmExtD, mask_top_regfile_data,
                       32'h0,     // Read1D
                       32'h0,     // Read2D
                       1'b0,      // RegWriteD
@@ -627,8 +601,7 @@ initial begin
                       32'h20,    // PCPlus4D
                       1'b1,      // Ecall
                       1'b0,      // Ebreak
-                      5'bx,      // MemSrcD
-                      32'dx,     // o_debug_data (Register data)
+                      32'dx,     // top_regfile_data (Register data)
                       "System ECALL");
 
     // Display test statistics

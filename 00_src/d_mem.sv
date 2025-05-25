@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module d_mem
 (
     input  logic        clk, we, 
@@ -7,8 +9,8 @@ module d_mem
 
 logic [31:0] RAM [63:0]; 
 
-initial
-    $readmemh("d_mem.txt", RAM);
+// initial
+//     $readmemh("d_mem.txt", RAM);
 
 assign rd = RAM[a[7:2]]; // word aligned - divide address by 4
 

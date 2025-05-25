@@ -26,7 +26,7 @@ always_comb
         7'b0110111: controls = 13'b1_100_01_0_00_0_11_0; // lui
         7'b0010111: controls = 13'b1_100_11_0_00_0_11_0; // auipc
         7'b1110011: controls = 13'b0_xxx_00_0_00_0_00_0; // ecall, ebreak
-        default:    controls = 13'b0_xxx_xx_0_xx_0_xx_0; // illegal op (make sure to disable register write, memory write, branch, and jump)
+        default:    controls = 13'b0_xxx_xx_0_00_0_xx_0; // illegal op (make sure to disable register write, memory write, branch, and jump)
 
     endcase
 

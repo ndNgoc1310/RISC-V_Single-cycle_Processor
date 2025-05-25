@@ -8,12 +8,12 @@ module controller
     input   logic   [11:0]  funct12D,
 
     input   logic           ZeroE, BranchE, JumpE, ALUResultEb0,
+    input   logic   [2:0]   funct3E,
 
     output  logic           RegWriteD, MemWriteD, JumpD, BranchD,
     output  logic   [3:0]   ALUControlD,
     output  logic   [1:0]   ResultSrcD, ALUSrcD,
     output  logic   [2:0]   ImmSrcD,
-    output  logic   [4:0]   MemSrcD, // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
     
     output  logic           PCSrcE,
     output  logic           Ecall, Ebreak
@@ -21,6 +21,7 @@ module controller
 
 logic   [1:0]   ALUOp;
 
+// Main Decoder
 main_dec md
 (
     .opD            (opD),
@@ -34,6 +35,7 @@ main_dec md
     .JumpD          (JumpD)
 );
 
+// ALU Decoder
 alu_dec ad
 (
     .ALUOp          (ALUOp),
@@ -44,9 +46,10 @@ alu_dec ad
     .ALUControlD    (ALUControlD)
 );
 
-br_dec bd
+// Branch Unit
+bru bru
 (
-    .funct3D        (funct3D),
+    .funct3E        (funct3E),
     .ZeroE          (ZeroE),
     .BranchE        (BranchE),
     .JumpE          (JumpE),
@@ -54,18 +57,13 @@ br_dec bd
     .PCSrcE         (PCSrcE)
 );
 
-sys_dec sd
+// Environment Unit
+eu eu
 (
     .opD            (opD),
     .funct12D       (funct12D),
     .Ecall          (Ecall),
     .Ebreak         (Ebreak)
-);
-
-mem_dec memd
-(
-    .funct3D    (funct3D),
-    .MemSrcD    (MemSrcD)   // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
 );
 
 endmodule:controller

@@ -7,7 +7,6 @@
 ./../../00_src/data_path.sv
 ./../../00_src/d_mem.sv
 ./../../00_src/extender.sv
-./../../00_src/flop_f.sv
 ./../../00_src/flop_r.sv
 ./../../00_src/hazard_unit.sv
 ./../../00_src/i_mem.sv
@@ -24,11 +23,14 @@
 ./../../00_src/shifter_r_a_nb.sv
 ./../../00_src/shifter_r_l_nb.sv
 ./../../00_src/shifter_l_l_nb.sv
-./../../00_src/br_dec.sv
-./../../00_src/sys_dec.sv
-./../../00_src/mem_dec.sv
-./../../00_src/rd_dat_sel.sv
-./../../00_src/wr_dat_sel.sv
+./../../00_src/bru.sv
+./../../00_src/eu.sv
+./../../00_src/lsu.sv
+./../../00_src/lu.sv
+./../../00_src/su.sv
+./../../00_src/top.sv
+./../../00_src/test_prog_full.mif
+./../../00_src/test_prog.mif
 ./../../00_src/top.sv
 
 ./../../01_bench/alu_tb.sv
@@ -37,11 +39,13 @@
 ./../../01_bench/extender_tb.sv
 ./../../01_bench/controller_tb.sv
 ./../../01_bench/D_stage_tb.sv
+./../../01_bench/processor_tb.sv
 ./../../01_bench/top_tb.sv
 
 
 ./conf.vlt
--top top_tb
+-top D_stage_tb
+
 
 
 

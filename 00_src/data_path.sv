@@ -2,10 +2,34 @@
 
 module data_path
 (
-    // Add debug ports for regfile
-    input  logic [4:0]  i_debug_addr,
-    output logic [31:0] o_debug_data,
+    // Debugging-----
+    // Register File
+    input   logic [4:0]  top_regfile_addr,
+    output  logic [31:0] top_regfile_data,
     
+    // Fetch Stage (F)
+    output  logic   [31:0]  top_pcF0, top_PCPlus4F,
+
+    // Decode Stage (D)
+    output  logic   [31:0]  top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
+    output  logic   [31:0]  top_Read1D, top_Read2D,
+    output  logic   [4:0]   top_RdD,
+
+    // Execute Stage (E)
+    output  logic   [31:0]  top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
+    output  logic           top_RegWriteE, top_MemWriteE,
+    output  logic   [1:0]   top_ResultSrcE, top_ALUSrcE,
+    output  logic   [3:0]   top_ALUControlE,
+ 
+    // Memory Stage (M)
+    output  logic   [31:0]  top_PCPlus4M,
+    output  logic   [1:0]   top_ResultSrcM,
+    output  logic   [31:0]  top_ReadDataM_sel,
+ 
+    // Write Back Stage (W)
+    output  logic   [1:0]   top_ResultSrcW,
+    output  logic   [31:0]  top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW, 
+
     // System signals
     input   logic           clk, rst,
 
@@ -14,7 +38,6 @@ module data_path
     input   logic   [3:0]   ALUControlD,
     input   logic   [1:0]   ResultSrcD, ALUSrcD, 
     input   logic   [2:0]   ImmSrcD,
-    input   logic   [4:0]   MemSrcD, // MemSrcD = {membD, memhD, lwD, membuD, memhuD}
 
     output  logic   [6:0]   opD,
     output  logic   [14:12] funct3D,
@@ -24,6 +47,7 @@ module data_path
     input   logic           PCSrcE,
 
     output  logic           JumpE, BranchE, ZeroE, ALUResultEb0,
+    output  logic   [2:0]   funct3E,
 
     // From/To Hazard Unit signals/buses
     input   logic           StallF,
@@ -71,7 +95,6 @@ logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE,
 logic           RegWriteE, MemWriteE;
 logic   [1:0]   ResultSrcE, ALUSrcE;
 logic   [3:0]   ALUControlE;
-logic   [4:0]   MemSrcE;
 
 assign ALUResultEb0 = ALUResultE[0];
 assign ResultSrcEb0 = ResultSrcE[0];
@@ -79,8 +102,8 @@ assign ResultSrcEb0 = ResultSrcE[0];
 // Memory Stage (M)
 logic   [31:0]  PCPlus4M;
 logic   [1:0]   ResultSrcM;
-logic   [4:0]   MemSrcM;
 logic   [31:0]  ReadDataM_sel;
+logic   [2:0]   funct3M;
 
 // Write Back Stage (W)
 logic   [1:0]   ResultSrcW;
@@ -111,30 +134,30 @@ flop_r #(.WIDTH(96)) Dreg
     .q      ({InstrD, pcD, PCPlus4D})
 );
 
-flop_r #(.WIDTH(192)) Ereg
+flop_r #(.WIDTH(190)) Ereg
 (
     .clk    (clk),
     .rst    (rst),
     .en     (1'b1),
     .clr    (FlushE),
-    .d      ({RegWriteD, ResultSrcD, MemWriteD, JumpD, BranchD, MemSrcD,
-                ALUControlD, ALUSrcD, Read1D, Read2D, pcD, Rs1D, Rs2D, RdD,
+    .d      ({RegWriteD, ResultSrcD, MemWriteD, JumpD, BranchD,
+                ALUControlD, ALUSrcD, funct3D, Read1D, Read2D, pcD, Rs1D, Rs2D, RdD,
                 ImmExtD, PCPlus4D}),
-    .q      ({RegWriteE, ResultSrcE, MemWriteE, JumpE, BranchE, MemSrcE,
-                ALUControlE, ALUSrcE, Read1E, Read2E, pcE, Rs1E, Rs2E, RdE,
+    .q      ({RegWriteE, ResultSrcE, MemWriteE, JumpE, BranchE,
+                ALUControlE, ALUSrcE, funct3E, Read1E, Read2E, pcE, Rs1E, Rs2E, RdE,
                 ImmExtE, PCPlus4E})
 );
 
 logic [31:0] tmp_WriteDataM;
 
-flop_r #(.WIDTH(110)) Mreg
+flop_r #(.WIDTH(108)) Mreg
 (
     .clk    (clk),
     .rst    (rst),
     .en     (1'b1),
     .clr    (1'b0),
-    .d      ({RegWriteE, ResultSrcE, MemWriteE, ALUResultE, WriteDataE, RdE, PCPlus4E, MemSrcE}),
-    .q      ({RegWriteM, ResultSrcM, MemWriteM, ALUResultM, tmp_WriteDataM, RdM, PCPlus4M, MemSrcM})
+    .d      ({RegWriteE, ResultSrcE, funct3E, MemWriteE, ALUResultE, WriteDataE, RdE, PCPlus4E}),
+    .q      ({RegWriteM, ResultSrcM, funct3M, MemWriteM, ALUResultM, tmp_WriteDataM, RdM, PCPlus4M})
 );
 
 flop_r #(.WIDTH(104)) Wreg
@@ -204,20 +227,13 @@ mux_4 #(.WIDTH(32)) rsltmux
     .y     (ResultW)
 );
 
-// ReadDataM Selection
-rd_dat_sel rdatsel 
+// Load/ Store Unit
+lsu lsu1
 (
     .ReadDataM      (ReadDataM),
-    .MemSrcM        (MemSrcM),
-    .ReadDataM_sel  (ReadDataM_sel)
-);
-
-// WriteDataM Selection
-wr_dat_sel wdatsel 
-(
     .tmp_WriteDataM (tmp_WriteDataM),
+    .funct3M        (funct3M),
     .ReadDataM_sel  (ReadDataM_sel),
-    .MemSrcM        (MemSrcM),
     .WriteDataM     (WriteDataM)
 );
 
@@ -275,11 +291,11 @@ extender ext
 // Register File
 reg_file rf
 (
-    // Debugging
-    .i_debug_addr   (i_debug_addr),
-    .o_debug_data   (o_debug_data),
+    // Output to top level
+    .top_regfile_addr   (top_regfile_addr),
+    .top_regfile_data   (top_regfile_data),
 
-    .clk            (~clk),
+    .clk            (clk),
     .rst            (rst),
     .i_rd_addr_0    (InstrD[19:15]),
     .i_rd_addr_1    (InstrD[24:20]),
@@ -290,6 +306,51 @@ reg_file rf
     .o_rd_dat_1     (Read2D)
 );
 
+// Debugging---------------
+// Debug signal assignments
+always_comb begin
+    // Fetch Stage
+    top_pcF0 = pcF0;
+    top_PCPlus4F = PCPlus4F;
+
+    // Decode Stage
+    top_InstrD = InstrD;
+    top_pcD = pcD;
+    top_ImmExtD = ImmExtD;
+    top_PCPlus4D = PCPlus4D;
+    top_Read1D = Read1D;
+    top_Read2D = Read2D;
+    top_RdD = RdD;
+
+    // Execute Stage
+    top_Read1E = Read1E;
+    top_Read2E = Read2E;
+    top_pcE = pcE;
+    top_ImmExtE = ImmExtE;
+    top_PCPlus4E = PCPlus4E;
+    top_PCTargetE = PCTargetE;
+    top_SrcAE = SrcAE;
+    top_SrcBE = SrcBE;
+    top_ALUResultE = ALUResultE;
+    top_WriteDataE = WriteDataE;
+    top_RegWriteE = RegWriteE;
+    top_MemWriteE = MemWriteE;
+    top_ResultSrcE = ResultSrcE;
+    top_ALUSrcE = ALUSrcE;
+    top_ALUControlE = ALUControlE;
+
+    // Memory Stage
+    top_PCPlus4M = PCPlus4M;
+    top_ResultSrcM = ResultSrcM;
+    top_ReadDataM_sel = ReadDataM_sel;
+
+    // Write Back Stage
+    top_ResultSrcW = ResultSrcW;
+    top_ALUResultW = ALUResultW;
+    top_ReadDataW = ReadDataW;
+    top_PCPlus4W = PCPlus4W;
+    top_ResultW = ResultW;
+end
 
 endmodule:data_path
 
