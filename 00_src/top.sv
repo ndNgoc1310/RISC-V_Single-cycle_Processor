@@ -13,6 +13,8 @@ module top
     output logic [31:0]     top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
     output logic [31:0]     top_Read1D, top_Read2D,
     output logic [4:0]      top_RdD,
+    output logic [4:0]      top_LSTypeD,
+    output logic            top_JumplrD,
 
     // Execute Stage (E)
     output logic [31:0]    top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, 
@@ -40,8 +42,9 @@ module top
     output logic           top_funct7Db5,
     output logic [11:0]    top_funct12D,
     output logic           top_ResultSrcEb0,
-    output logic           top_PCSrcE,
-    output logic           top_ZeroE, top_BranchE, top_JumpE, top_ALUResultEb0,
+    output logic [1:0]     top_PCSrcE,
+    output logic           top_BranchE, top_JumpE,
+    output logic [3:0]     top_FlagE, // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 
     // Processor Internal - Hazard Unit Interface
     output logic           top_StallF,
@@ -114,21 +117,22 @@ processor proc
     .top_RegWriteD        (top_RegWriteD),
     .top_MemWriteD        (top_MemWriteD),
     .top_JumpD            (top_JumpD),
+    .top_JumplrD          (top_JumplrD),
     .top_BranchD          (top_BranchD),
     .top_ALUControlD      (top_ALUControlD),
     .top_ResultSrcD       (top_ResultSrcD),
     .top_ALUSrcD          (top_ALUSrcD),
     .top_ImmSrcD          (top_ImmSrcD),
+    .top_LSTypeD          (top_LSTypeD),
     .top_opD              (top_opD),
     .top_funct3D          (top_funct3D),
     .top_funct7Db5        (top_funct7Db5),
     .top_funct12D         (top_funct12D),
     .top_ResultSrcEb0     (top_ResultSrcEb0),
     .top_PCSrcE           (top_PCSrcE),
-    .top_ZeroE            (top_ZeroE),
+    .top_FlagE            (top_FlagE),
     .top_BranchE          (top_BranchE),
     .top_JumpE            (top_JumpE),
-    .top_ALUResultEb0     (top_ALUResultEb0),
 
     // Debug - Hazard Unit Interface
     .top_StallF           (top_StallF),

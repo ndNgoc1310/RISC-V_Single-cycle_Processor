@@ -19,11 +19,13 @@ logic [31:0] top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D;
 logic [31:0] top_Read1D, top_Read2D;
 logic [4:0]  top_regfile_addr;
 logic [31:0] top_regfile_data;
+logic [4:0]  top_LSTypeD;
+logic        top_JumplrD;
 
 //      Controller Interface
-logic        top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD;
+logic        top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD, top_ALUSrcD;
 logic [3:0]  top_ALUControlD;
-logic [1:0]  top_ResultSrcD, top_ALUSrcD;
+logic [1:0]  top_ResultSrcD;
 logic [2:0]  top_ImmSrcD;
 
 // (not in use)
@@ -39,12 +41,13 @@ logic [4:0]  top_Rs1D, top_Rs2D, top_RdD;
 // Execute Stage (E) ============
 logic [31:0] top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E;
 logic [31:0] top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE;
-logic        top_RegWriteE, top_MemWriteE;
-logic [1:0]  top_ResultSrcE, top_ALUSrcE;
+logic        top_RegWriteE, top_MemWriteE, top_ALUSrcE;
+logic [1:0]  top_ResultSrcE;
 logic [3:0]  top_ALUControlE;
 logic        top_ResultSrcEb0;
-logic        top_PCSrcE;
-logic        top_ZeroE, top_BranchE, top_JumpE, top_ALUResultEb0;
+logic [1:0]  top_PCSrcE;
+logic        top_BranchE, top_JumpE;
+logic [3:0]  top_FlagE; // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 logic        top_FlushE;
 logic [1:0]  top_ForwardAE, top_ForwardBE;
 logic [4:0]  top_Rs1E, top_Rs2E, top_RdE;
@@ -74,7 +77,7 @@ logic           Ecall, Ebreak;
 
 // Internal signals for verification
 int             cycle_count;
-string          instr_mess;
+// string          instr_mess;
 integer fd;     // File to display simulation results
 logic   [31:0]  exp_addr, exp_dat;
 logic           test_passed_flag;
@@ -128,21 +131,22 @@ processor dut (
     .top_RegWriteD      (top_RegWriteD),
     .top_MemWriteD      (top_MemWriteD),
     .top_JumpD          (top_JumpD),
+    .top_JumplrD        (top_JumplrD),
     .top_BranchD        (top_BranchD),
     .top_ALUControlD    (top_ALUControlD),
     .top_ResultSrcD     (top_ResultSrcD),
     .top_ALUSrcD        (top_ALUSrcD),
     .top_ImmSrcD        (top_ImmSrcD),
+    .top_LSTypeD        (top_LSTypeD),
     .top_opD            (top_opD),
     .top_funct3D        (top_funct3D),
     .top_funct7Db5      (top_funct7Db5),
     .top_funct12D       (top_funct12D),
     .top_ResultSrcEb0   (top_ResultSrcEb0),
     .top_PCSrcE         (top_PCSrcE),
-    .top_ZeroE          (top_ZeroE),
+    .top_FlagE          (top_FlagE),
     .top_BranchE        (top_BranchE),
     .top_JumpE          (top_JumpE),
-    .top_ALUResultEb0   (top_ALUResultEb0),
 
     // Debug - Hazard Unit Interface
     .top_StallF         (top_StallF),
@@ -190,22 +194,22 @@ i_mem im (
 
 // Debug monitoring
 always @(posedge clk) begin
-    // Monitor program counter and instruction
-    $fdisplay(fd, "\n// ------------------------[CYCLE %0d]------------------------", cycle_count);
-    $fdisplay(fd, "PC = 0x%h", top_pcF);
-    $fdisplay(fd, "Instr = 0x%h (%s)", top_InstrF, instr_mess);
 
+    $fdisplay(fd, "\n// 📌************************************************ [ %0d ] ************************************************📌", cycle_count);
+    // $fdisplay(fd, "PC = 0x%h", top_pcF);
+    // $fdisplay(fd, "Instr = 0x%h (%s)", top_InstrF, instr_mess);
+    
     // Add pipeline stage monitoring
-    $fdisplay(fd, "\n// Pipeline Stage Status ----------------");
+    $fdisplay(fd, "\n// ℹ️------------------------------------- PIPELINE STAGE STATUS --------------------------------------");
 
-    $fdisplay(fd, "// FETCH ================================");
+    $fdisplay(fd, "// Fetch _______________________________________________________________");
     $fdisplay(fd, "          pcF0 = 0x%h, pcF = 0x%h, InstrF = 0x%h", top_pcF0, top_pcF, top_InstrF); 
     
     $fdisplay(fd, "          PCPlus4F = 0x%h, PCTargetE = 0x%h", top_PCPlus4F, top_PCTargetE); 
     
     $fdisplay(fd, "          PCSrcE = %b, StallF = %b", top_PCSrcE, top_StallF); 
    
-    $fdisplay(fd, "// DECODE ===============================");
+    $fdisplay(fd, "// Decode ______________________________________________________________");
     $fdisplay(fd, "                       pcD = 0x%h, InstrD = 0x%h", top_pcD, top_InstrD);
 
     $fdisplay(fd, "          PCPlus4D = 0x%h", top_PCPlus4D);
@@ -216,13 +220,15 @@ always @(posedge clk) begin
 
     $fdisplay(fd, "          Rs1D = %d, Rs2D = %d, RdD = %d", top_Rs1D, top_Rs2D, top_RdD);
 
-    $fdisplay(fd, "          RegWriteD = %b, ResultSrcD = %b, MemWriteD = %b, JumpD = %b, BranchD = %b", 
-                        top_RegWriteD, top_ResultSrcD, top_MemWriteD, top_JumpD, top_BranchD);
+    $fdisplay(fd, "          RegWriteD = %b, ResultSrcD = %b, MemWriteD = %b, JumpD = %b, BranchD = %b, JumplrD = %b", 
+                        top_RegWriteD, top_ResultSrcD, top_MemWriteD, top_JumpD, top_BranchD, top_JumplrD);
 
-    $fdisplay(fd, "          ALUControlD = %b, ALUSrcD = %b, top_ImmSrcD = %b", 
-                        top_ALUControlD, top_ALUSrcD, top_ImmSrcD);
+    $fdisplay(fd, "          ALUControlD = %b, ALUSrcD = %b, ImmSrcD = %b, LSTypeD = %b", 
+                        top_ALUControlD, top_ALUSrcD, top_ImmSrcD, top_LSTypeD);
 
-    $fdisplay(fd, "// EXECUTE ==============================");
+    $fdisplay(fd, "          Ecall = %b, Ebreak = %b", Ecall, Ebreak);                    
+
+    $fdisplay(fd, "// Execute _____________________________________________________________");
     $fdisplay(fd, "                       pcE = 0x%h", top_pcE);
 
     $fdisplay(fd, "          PCPlus4E = 0x%h, PCTargetE = 0x%h", top_PCPlus4E, top_PCTargetE);
@@ -236,8 +242,8 @@ always @(posedge clk) begin
     $fdisplay(fd, "          RegWriteE = %b, ResultSrcE = %b, MemWriteE = %b, JumpE = %b, BranchE = %b, PCSrcE = %b", 
                         top_RegWriteE, top_ResultSrcE, top_MemWriteE, top_JumpE, top_BranchE, top_PCSrcE);
 
-    $fdisplay(fd, "          ALUControlE = %b, ALUSrcE = %b, ZeroE = %b, ALUResultEb0 = %b", 
-                        top_ALUControlE, top_ALUSrcE, top_ZeroE, top_ALUResultEb0);
+    $fdisplay(fd, "          ALUControlE = %b, ALUSrcE = %b, FlagE = %b", 
+                        top_ALUControlE, top_ALUSrcE, top_FlagE);
 
     $fdisplay(fd, "          ResultSrcEb0 = %b", top_ResultSrcEb0);
 
@@ -246,7 +252,7 @@ always @(posedge clk) begin
 
     $fdisplay(fd, "          ForwardAE = %b, ForwardBE = %b", top_ForwardAE, top_ForwardBE);
 
-    $fdisplay(fd, "// MEMORY ===============================");
+    $fdisplay(fd, "// Memory ______________________________________________________________");
     $fdisplay(fd, "          PCPlus4M = 0x%h", top_PCPlus4M);
 
     $fdisplay(fd, "                                RdM = %d",                     top_RdM);
@@ -260,9 +266,8 @@ always @(posedge clk) begin
     $fdisplay(fd, "          ReadDataM = %d, ReadDataM_sel = %d", 
                         top_ReadDataM, top_ReadDataM_sel);
 
-    $fdisplay(fd, "// WRITE-BACK ===========================");
-    $fdisplay(fd, "                                                  PCPlus4W = 0x%h",                        
-                                                       top_PCPlus4W);
+    $fdisplay(fd, "// Write-back __________________________________________________________");
+    $fdisplay(fd, "          PCPlus4W = 0x%h", top_PCPlus4W);
 
     $fdisplay(fd, "                                RdW = %d",                     top_RdW);
 
@@ -275,22 +280,23 @@ always @(posedge clk) begin
     $fdisplay(fd, "          ReadDataW = %d, ResultW = %d", 
                         top_ReadDataW, top_ResultW);
 
-    // Monitor memory operations   
-    $fdisplay(fd, "\n// Memory Data -----------------------------------");
+    // Monitor memory operations  
+    $fdisplay(fd, "\n// 💾----------------------------------------- MEMORY ACCESS ------------------------------------------");
     if (top_MemWriteM) 
     begin
-                    $fdisplay(fd, "       Memory Write @ 0x%h:", top_ALUResultM);
+                    $fdisplay(fd, "          Memory Write @ 0x%h:", top_ALUResultM);
                     $fdisplay(fd, "                 Data = %d   |   0x%h", top_WriteDataM, top_WriteDataM);
 
                     // Set Test Pass Flag
                     if (top_ALUResultM == exp_addr && top_WriteDataM == exp_dat)    test_passed_flag <= 1;
     end
 
-                    $fdisplay(fd, "       Memory Read  @ 0x%h:", top_ALUResultM);
-                    $fdisplay(fd, "                 Data = %d   |   0x%h", top_ReadDataM, top_ReadDataM);
+                    $fdisplay(fd, "          Memory Read  @ 0x%h:", top_ALUResultM);
+                    $fdisplay(fd, "                 Data = %d   |   0x%h", top_ReadDataM_sel, top_ReadDataM_sel);
 
+    
     // Monitor 32 register values
-    $fdisplay(fd, "\n// Registers Data --------------------------------");
+    $fdisplay(fd, "\n// 📂----------------------------------------- REGISTER FILE ------------------------------------------");
     top_regfile_addr <= 0; #1;
     $fdisplay(fd, "                  x0  = %d   |   0x%h", top_regfile_data, top_regfile_data);
     top_regfile_addr <= 1; #1; 
@@ -375,11 +381,11 @@ initial begin
         $fdisplay(fd, "Error opening file!");
         $finish;
     end
-
+    
     // Redirect display output to file
-    $fdisplay(fd, "===========================================");
-    $fdisplay(fd, "          SIMULATION RESULTS");
-    $fdisplay(fd, "===========================================\n");
+    $fdisplay(fd, "// =============================================================================================================");
+    $fdisplay(fd, "                                                 SIMULATION RESULTS");
+    $fdisplay(fd, "// =============================================================================================================\n");
 
     // Initialize test
     rst = 1; 
@@ -389,7 +395,7 @@ initial begin
     cycle_count = 1;
 
     // Let it run for enough cycles to complete the program
-    repeat (35) @(posedge clk);  // Adjust number as needed
+    repeat (200) @(posedge clk);  // Adjust number as needed
 
     // Add extra delay for register display to complete
     repeat (32) #1;  // Wait for all 32 register reads to complete
@@ -422,38 +428,76 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
-always_comb begin
-    case (top_pcF)
-        32'h00: instr_mess = "addi x2, x0, 5      # x2 = 5";
-        32'h04: instr_mess = "addi x3, x0, 12     # x3 = 12";
-        32'h08: instr_mess = "addi x7, x3, -9     # x7 = (12 - 9) = 3";
-        32'h0C: instr_mess = "or x4, x7, x2       # x4 = (3 OR 5) = 7";
-        32'h10: instr_mess = "xor x5, x3, x4      # x5 = (12 XOR 7) = 11";
-        32'h14: instr_mess = "add x5, x5, x4      # x5 = (11 + 7) = 18";
-        32'h18: instr_mess = "beq x5, x7, end     # shouldn't be taken";
-        32'h1C: instr_mess = "slt x4, x3, x4      # x4 = (12 < 7) = 0";
-        32'h20: instr_mess = "beq x4, x0, around  # should be taken";
-        32'h24: instr_mess = "addi x5, x0, 0      # shouldn't happen";
-        32'h28: instr_mess = "slt x4, x7, x2      # x4 = (3 < 5) = 1";
-        32'h2C: instr_mess = "add x7, x4, x5      # x7 = (1 + 18) = 19";
-        32'h30: instr_mess = "sub x7, x7, x2      # x7 = (19 - 5) = 14";
-        32'h34: instr_mess = "sw x7, 84(x3)       # [96] = 14";
-        32'h38: instr_mess = "lw x2, 96(x0)       # x2 = [96] = 14";
-        32'h3C: instr_mess = "add x9, x2, x5      # x9 = (14 + 18) = 32";
-        32'h40: instr_mess = "jal x3, end         # jump to end, x3 = 0x44";
-        32'h44: instr_mess = "addi x2, x0, 1      # shouldn't happen";
-        32'h48: instr_mess = "add x2, x2, x9      # x2 = (14 + 32) = 46";
-        32'h4C: instr_mess = "addi x4, x0, 1      # x4 = 1";
-        32'h50: instr_mess = "lui x5, 0x80000     # x5 = 0x80000000";
-        32'h54: instr_mess = "slt x6, x5, x4      # x6 = 1";
-        32'h58: instr_mess = "beq x6, x0, wrong   # shouldn't be taken";
-        32'h5C: instr_mess = "lui x9, 0xABCDE     # x9 = 0xABCDE000";
-        32'h60: instr_mess = "add x2, x2, x9      # x2 = 0xABCDE02E";
-        32'h64: instr_mess = "sw x2, 0x40(x3)     # mem[132] = 0xABCDE02E";
-        32'h68: instr_mess = "beq x2, x2, done    # infinite loop";
-        default:instr_mess = "Unknown instruction";
-    endcase
-end
+// always_comb begin
+//     case (top_pcF)
+//         32'h00: instr_mess = "addi x2, x0, 5      # x2 = 5";
+//         32'h04: instr_mess = "addi x3, x0, 12     # x3 = 12";
+//         32'h08: instr_mess = "addi x7, x3, -9     # x7 = (12 - 9) = 3";
+//         32'h0C: instr_mess = "or x4, x7, x2       # x4 = (3 OR 5) = 7";
+//         32'h10: instr_mess = "xor x5, x3, x4      # x5 = (12 XOR 7) = 11";
+//         32'h14: instr_mess = "add x5, x5, x4      # x5 = (11 + 7) = 18";
+//         32'h18: instr_mess = "beq x5, x7, end     # shouldn't be taken";
+//         32'h1C: instr_mess = "slt x4, x3, x4      # x4 = (12 < 7) = 0";
+//         32'h20: instr_mess = "beq x4, x0, around  # should be taken";
+//         32'h24: instr_mess = "addi x5, x0, 0      # shouldn't happen";
+//         32'h28: instr_mess = "slt x4, x7, x2      # x4 = (3 < 5) = 1";
+//         32'h2C: instr_mess = "add x7, x4, x5      # x7 = (1 + 18) = 19";
+//         32'h30: instr_mess = "sub x7, x7, x2      # x7 = (19 - 5) = 14";
+//         32'h34: instr_mess = "sw x7, 84(x3)       # [96] = 14";
+//         32'h38: instr_mess = "lw x2, 96(x0)       # x2 = [96] = 14";
+//         32'h3C: instr_mess = "add x9, x2, x5      # x9 = (14 + 18) = 32";
+//         32'h40: instr_mess = "jal x3, end         # jump to end, x3 = 0x44";
+//         32'h44: instr_mess = "addi x2, x0, 1      # shouldn't happen";
+//         32'h48: instr_mess = "add x2, x2, x9      # x2 = (14 + 32) = 46";
+//         32'h4C: instr_mess = "addi x4, x0, 1      # x4 = 1";
+//         32'h50: instr_mess = "lui x5, 0x80000     # x5 = 0x80000000";
+//         32'h54: instr_mess = "slt x6, x5, x4      # x6 = 1";
+//         32'h58: instr_mess = "beq x6, x0, wrong   # shouldn't be taken";
+//         32'h5C: instr_mess = "lui x9, 0xABCDE     # x9 = 0xABCDE000";
+//         32'h60: instr_mess = "add x2, x2, x9      # x2 = 0xABCDE02E";
+//         32'h64: instr_mess = "sw x2, 0x40(x3)     # mem[132] = 0xABCDE02E";
+
+//         // Additional instructions for testing
+//         32'h68: instr_mess = "addi x10, x0, 10      # x10 = 10";
+//         32'h6C: instr_mess = "addi x11, x0, 11      # x11 = 11";
+//         32'h70: instr_mess = "addi x12, x0, 12      # x12 = 12";
+//         32'h74: instr_mess = "andi x13, x12, 11     # x13 = 12 & 11 = 8";
+//         32'h78: instr_mess = "ori  x14, x12, 11     # x14 = 12 | 11 = 15";
+//         32'h7C: instr_mess = "xori x15, x12, 11     # x15 = 12 ^ 11 = 7";
+//         32'h80: instr_mess = "slli x16, x13, 2      # x16 = 8 << 2 = 32";
+//         32'h84: instr_mess = "srli x17, x13, 2      # x17 = 8 >> 2 = 2";
+//         32'h88: instr_mess = "srai x18, x13, 2      # x18 = 8 >>> 2 = 2";
+//         32'h8C: instr_mess = "slti x19, x13, 12     # x19 = (8 < 12) = 1";
+//         32'h90: instr_mess = "sltiu x20, x13, 12    # x20 = (8 < 12) = 1";
+//         32'h94: instr_mess = "and x22, x13, x15     # x22 = 8 & 7 = 0";
+//         32'h98: instr_mess = "sll x20, x13, x14     # x20 = 8 << (15 & 0x1F) = 0";
+//         32'h9C: instr_mess = "srl x21, x13, x14     # x21 = 8 >> (15 & 0x1F) = 0";
+//         32'hA0: instr_mess = "sra x26, x13, x14     # x26 = 8 >>> (15 & 0x1F) = 0";
+//         32'hA4: instr_mess = "sltu x27, x13, x11    # x27 = (8 < 11) = 1";
+//         32'hA8: instr_mess = "sw x10, 0(x0)         # Mem[0] = 10";
+//         32'hAC: instr_mess = "lb x5, 0(x0)          # x5 = 10";
+//         32'hB0: instr_mess = "lh x6, 0(x0)          # x6 = 10";
+//         32'hB4: instr_mess = "lbu x8, 0(x0)         # x8 = 10";
+//         32'hB8: instr_mess = "lhu x9, 0(x0)         # x9 = 10";
+//         32'hBC: instr_mess = "sb x11, 2(x0)         # Mem[2] = 11 (byte)";
+//         32'hC0: instr_mess = "sh x12, 2(x0)         # Mem[2] = 12 (halfword)";
+//         32'hC4: instr_mess = "bne x10, x11, +0x18   # bne x10, x11, skip1 (taken)";
+//         32'hC8: instr_mess = "nop                   # should be skipped";
+//         32'hCC: instr_mess = "blt x11, x10, +0x8    # blt x11, x10, skip2 (not taken)";
+//         32'hD0: instr_mess = "bge x11, x11, +0x8    # bge x11, x11, skip3 (taken)";
+//         32'hD4: instr_mess = "nop                   # should be skipped";
+//         32'hD8: instr_mess = "bgeu x11, x11, +0x8   # bgeu x11, x11, skip4 (taken)";
+//         32'hDC: instr_mess = "nop                   # should be skipped";
+//         32'hE0: instr_mess = "bltu x11, x10, +0x8   # bltu x11, x10, skip5 (not taken)";
+//         32'hE4: instr_mess = "jalr x0, x11, 64      # jump to 0x12C (original program continues)";
+//         32'hE8: instr_mess = "auipc x10, 0xD        # x10 = PC + 0xD000";
+//         32'hEC: instr_mess = "ecall                 # environment call";
+//         32'hF0: instr_mess = "ebreak                # breakpoint";
+//         32'hF4: instr_mess = "jal x0, -4            # infinite loop";       
+
+//         default:instr_mess = "Unknown instruction";
+//     endcase
+// end
 
 
 endmodule:processor_tb

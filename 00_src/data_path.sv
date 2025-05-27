@@ -17,8 +17,8 @@ module data_path
 
     // Execute Stage (E)
     output  logic   [31:0]  top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
-    output  logic           top_RegWriteE, top_MemWriteE,
-    output  logic   [1:0]   top_ResultSrcE, top_ALUSrcE,
+    output  logic           top_RegWriteE, top_MemWriteE, top_ALUSrcE,
+    output  logic   [1:0]   top_ResultSrcE, 
     output  logic   [3:0]   top_ALUControlE,
  
     // Memory Stage (M)
@@ -34,20 +34,22 @@ module data_path
     input   logic           clk, rst,
 
     // From/To Controller signals/buses
-    input   logic           RegWriteD, MemWriteD, JumpD, BranchD, 
+    input   logic           RegWriteD, MemWriteD, JumpD, JumplrD, BranchD, ALUSrcD, 
     input   logic   [3:0]   ALUControlD,
-    input   logic   [1:0]   ResultSrcD, ALUSrcD, 
+    input   logic   [1:0]   ResultSrcD, 
     input   logic   [2:0]   ImmSrcD,
+    input   logic   [4:0]   LSTypeD,
 
     output  logic   [6:0]   opD,
     output  logic   [14:12] funct3D,
     output  logic           funct7Db5,
     output  logic   [11:0]  funct12D,
 
-    input   logic           PCSrcE,
+    input   logic   [1:0]   PCSrcE,
 
-    output  logic           JumpE, BranchE, ZeroE, ALUResultEb0,
+    output  logic           JumpE, JumplrE, BranchE,
     output  logic   [2:0]   funct3E,
+    output  logic   [3:0]   FlagE, // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 
     // From/To Hazard Unit signals/buses
     input   logic           StallF,
@@ -92,22 +94,22 @@ assign funct12D = InstrD[31:20];
 
 // Execute Stage (E)
 logic   [31:0]  Read1E, Read2E, pcE, ImmExtE, PCPlus4E, PCTargetE, SrcAE, SrcBE, ALUResultE, WriteDataE;
-logic           RegWriteE, MemWriteE;
-logic   [1:0]   ResultSrcE, ALUSrcE;
+logic           RegWriteE, MemWriteE, ALUSrcE;
+logic   [1:0]   ResultSrcE;
 logic   [3:0]   ALUControlE;
+logic   [4:0]   LSTypeE;
 
-assign ALUResultEb0 = ALUResultE[0];
 assign ResultSrcEb0 = ResultSrcE[0];
 
 // Memory Stage (M)
-logic   [31:0]  PCPlus4M;
+logic   [31:0]  PCPlus4M, PCTargetM;
 logic   [1:0]   ResultSrcM;
-logic   [31:0]  ReadDataM_sel;
-logic   [2:0]   funct3M;
+logic   [4:0]   LSTypeM;
+logic   [31:0]  tmp_WriteDataM, ReadDataM_sel;
 
 // Write Back Stage (W)
 logic   [1:0]   ResultSrcW;
-logic   [31:0]  ALUResultW, ReadDataW, PCPlus4W, ResultW; 
+logic   [31:0]  ALUResultW, ReadDataW, PCPlus4W, PCTargetW, ResultW; 
 
 assign Rs1D = InstrD[19:15];
 assign Rs2D = InstrD[24:20];
@@ -134,68 +136,58 @@ flop_r #(.WIDTH(96)) Dreg
     .q      ({InstrD, pcD, PCPlus4D})
 );
 
-flop_r #(.WIDTH(190)) Ereg
+flop_r #(.WIDTH(195)) Ereg
 (
     .clk    (clk),
     .rst    (rst),
     .en     (1'b1),
     .clr    (FlushE),
-    .d      ({RegWriteD, ResultSrcD, MemWriteD, JumpD, BranchD,
-                ALUControlD, ALUSrcD, funct3D, Read1D, Read2D, pcD, Rs1D, Rs2D, RdD,
-                ImmExtD, PCPlus4D}),
-    .q      ({RegWriteE, ResultSrcE, MemWriteE, JumpE, BranchE,
-                ALUControlE, ALUSrcE, funct3E, Read1E, Read2E, pcE, Rs1E, Rs2E, RdE,
+    .d      ({RegWriteD, ResultSrcD, MemWriteD, JumpD, JumplrD, BranchD,
+                ALUControlD, ALUSrcD, funct3D, LSTypeD, Read1D, Read2D, pcD, Rs1D, Rs2D, RdD,
+                ImmExtD, PCPlus4D}), 
+    .q      ({RegWriteE, ResultSrcE, MemWriteE, JumpE, JumplrE, BranchE,
+                ALUControlE, ALUSrcE, funct3E, LSTypeE, Read1E, Read2E, pcE, Rs1E, Rs2E, RdE,
                 ImmExtE, PCPlus4E})
 );
 
-logic [31:0] tmp_WriteDataM;
-
-flop_r #(.WIDTH(108)) Mreg
+flop_r #(.WIDTH(142)) Mreg
 (
     .clk    (clk),
     .rst    (rst),
     .en     (1'b1),
     .clr    (1'b0),
-    .d      ({RegWriteE, ResultSrcE, funct3E, MemWriteE, ALUResultE, WriteDataE, RdE, PCPlus4E}),
-    .q      ({RegWriteM, ResultSrcM, funct3M, MemWriteM, ALUResultM, tmp_WriteDataM, RdM, PCPlus4M})
+    .d      ({RegWriteE, ResultSrcE, MemWriteE, LSTypeE, ALUResultE, WriteDataE,     RdE, PCPlus4E, PCTargetE}),
+    .q      ({RegWriteM, ResultSrcM, MemWriteM, LSTypeM, ALUResultM, tmp_WriteDataM, RdM, PCPlus4M, PCTargetM})
 );
 
-flop_r #(.WIDTH(104)) Wreg
+flop_r #(.WIDTH(136)) Wreg
 (
     .clk    (clk),
     .rst    (rst),
     .en     (1'b1),
     .clr    (1'b0),
-    .d      ({RegWriteM, ResultSrcM, ALUResultM, ReadDataM_sel, RdM, PCPlus4M}),
-    .q      ({RegWriteW, ResultSrcW, ALUResultW, ReadDataW, RdW, PCPlus4W})
+    .d      ({RegWriteM, ResultSrcM, ALUResultM, ReadDataM_sel, RdM, PCPlus4M, PCTargetM}),
+    .q      ({RegWriteW, ResultSrcW, ALUResultW, ReadDataW,     RdW, PCPlus4W, PCTargetW})
 );
 
 // Multiplexers
-mux_2 #(.WIDTH(32)) mux_2
+mux_4 #(.WIDTH(32)) PCmux
 (
     .d0    (PCPlus4F),
     .d1    (PCTargetE),
+    .d2    (ALUResultE),
+    .d3    ('0),
     .s     (PCSrcE),    
     .y     (pcF0)
 );
 
-logic [31:0] tmp_SrcAE;
-
-mux_4 #(.WIDTH(32)) srcAmux1
+mux_4 #(.WIDTH(32)) srcAmux
 (
     .d0    (Read1E),
     .d1    (ResultW),
     .d2    (ALUResultM),
     .d3    ('0),
     .s     (ForwardAE),
-    .y     (tmp_SrcAE)
-);
-
-mux_2 #(.WIDTH(32)) srcAmux2
-(
-    .d0    (tmp_SrcAE),
-    .d1    (pcE),
-    .s     (ALUSrcE[1]),
     .y     (SrcAE)
 );
 
@@ -213,7 +205,7 @@ mux_2 #(.WIDTH(32)) srcBmux2
 (
     .d0    (WriteDataE),
     .d1    (ImmExtE),
-    .s     (ALUSrcE[0]),
+    .s     (ALUSrcE),
     .y     (SrcBE)
 );
 
@@ -222,17 +214,17 @@ mux_4 #(.WIDTH(32)) rsltmux
     .d0    (ALUResultW),
     .d1    (ReadDataW),
     .d2    (PCPlus4W),
-    .d3    ('0),
+    .d3    (PCTargetW),
     .s     (ResultSrcW),
     .y     (ResultW)
 );
 
-// Load/ Store Unit
-lsu lsu1
+// Mem Read/ Write Unit
+mrwu mrwu
 (
     .ReadDataM      (ReadDataM),
     .tmp_WriteDataM (tmp_WriteDataM),
-    .funct3M        (funct3M),
+    .LSTypeM        (LSTypeM),
     .ReadDataM_sel  (ReadDataM_sel),
     .WriteDataM     (WriteDataM)
 );
@@ -261,23 +253,13 @@ adder_nb #(.WIDTH(32)) PCplusbranch
 );
 
 // ALU
-// Debugging
-logic [31:0] db_src_b, db_sum;
-logic db_cout, db_overflow;
-
 alu ALU
 (
-    // Debugging
-    .db_src_b(db_src_b),
-    .db_sum(db_sum),
-    .db_cout(db_cout),
-    .db_overflow(db_overflow),
-    
     .a          (SrcAE),
     .b          (SrcBE),
     .ALUControl (ALUControlE),
     .rslt       (ALUResultE),
-    .zero       (ZeroE)
+    .flag       (FlagE)
 );
 
 // Immediate Extender

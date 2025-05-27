@@ -14,12 +14,14 @@ module processor
     output logic [31:0]     top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
     output logic [31:0]     top_Read1D, top_Read2D,
     output logic [4:0]      top_RdD,
+    output logic [4:0]      top_LSTypeD,
+    output                  top_JumplrD,
 
     // Execute Stage (E)    
     output logic [31:0]     top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, 
                             top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
-    output logic            top_RegWriteE, top_MemWriteE,
-    output logic [1:0]      top_ResultSrcE, top_ALUSrcE,
+    output logic            top_RegWriteE, top_MemWriteE, top_ALUSrcE,
+    output logic [1:0]      top_ResultSrcE, 
     output logic [3:0]      top_ALUControlE,
 
     // Memory Stage (M) 
@@ -32,17 +34,18 @@ module processor
     output logic [31:0]     top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW,
     
     // Internal - Controller Interface
-    output logic           top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD,
+    output logic           top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD, top_ALUSrcD,
     output logic [3:0]     top_ALUControlD,
-    output logic [1:0]     top_ResultSrcD, top_ALUSrcD,
+    output logic [1:0]     top_ResultSrcD, 
     output logic [2:0]     top_ImmSrcD,
     output logic [6:0]     top_opD,
     output logic [2:0]     top_funct3D,
     output logic           top_funct7Db5,
     output logic [11:0]    top_funct12D,
     output logic           top_ResultSrcEb0,
-    output logic           top_PCSrcE,
-    output logic           top_ZeroE, top_BranchE, top_JumpE, top_ALUResultEb0,
+    output logic [1:0]     top_PCSrcE,
+    output logic           top_BranchE, top_JumpE,
+    output logic [3:0]     top_FlagE, // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 
     // Internal - Hazard Unit Interface
     output logic           top_StallF,
@@ -71,10 +74,11 @@ module processor
 );
 
 // From/To Controller signals/buses
-logic           RegWriteD, MemWriteD, JumpD, BranchD; 
+logic           RegWriteD, MemWriteD, JumpD, JumplrD, BranchD, ALUSrcD; 
 logic   [3:0]   ALUControlD;
-logic   [1:0]   ResultSrcD, ALUSrcD;
+logic   [1:0]   ResultSrcD;
 logic   [2:0]   ImmSrcD;
+logic   [4:0]   LSTypeD;
 
 logic   [6:0]   opD;
 logic   [14:12] funct3D;
@@ -82,8 +86,9 @@ logic           funct7Db5;
 logic   [11:0]  funct12D;
 
 logic           ResultSrcEb0;
-logic           PCSrcE;
-logic           JumpE, BranchE, ZeroE, ALUResultEb0;
+logic   [1:0]   PCSrcE;
+logic           JumpE, JumplrE, BranchE;
+logic   [3:0]   FlagE; // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 logic   [2:0]   funct3E;
 
 
@@ -118,10 +123,10 @@ controller ctrl
     .funct3D        (funct3D),
     .funct7Db5      (funct7Db5),
     .funct12D       (funct12D),
-    .ZeroE          (ZeroE),
+    .FlagE          (FlagE),
     .BranchE        (BranchE),
     .JumpE          (JumpE),
-    .ALUResultEb0   (ALUResultEb0),
+    .JumplrE        (JumplrE),
     .funct3E        (funct3E),
     .ResultSrcD     (ResultSrcD),
     .MemWriteD      (MemWriteD),
@@ -129,9 +134,11 @@ controller ctrl
     .ALUSrcD        (ALUSrcD),
     .RegWriteD      (RegWriteD),
     .JumpD          (JumpD),
+    .JumplrD        (JumplrD),
     .BranchD        (BranchD),
     .ImmSrcD        (ImmSrcD),
     .ALUControlD    (ALUControlD),
+    .LSTypeD        (LSTypeD),
     .Ecall          (Ecall),
     .Ebreak         (Ebreak)
 );
@@ -174,7 +181,7 @@ data_path dp
     .top_ReadDataM_sel (top_ReadDataM_sel),
     
     .top_ResultSrcW    (top_ResultSrcW),
-    .top_ALUResultW(top_ALUResultW),
+    .top_ALUResultW    (top_ALUResultW),
     .top_ReadDataW     (top_ReadDataW),
     .top_PCPlus4W      (top_PCPlus4W),
     .top_ResultW       (top_ResultW),
@@ -187,8 +194,10 @@ data_path dp
     .RegWriteD      (RegWriteD),
     .MemWriteD      (MemWriteD),
     .JumpD          (JumpD),
+    .JumplrD        (JumplrD),
     .BranchD        (BranchD),
     .ALUSrcD        (ALUSrcD),
+    .LSTypeD        (LSTypeD),
     .ALUControlD    (ALUControlD),
     .ResultSrcD     (ResultSrcD),
     .ImmSrcD        (ImmSrcD),
@@ -199,9 +208,9 @@ data_path dp
 
     .PCSrcE         (PCSrcE),
     .JumpE          (JumpE),
+    .JumplrE        (JumplrE),
     .BranchE        (BranchE),
-    .ZeroE          (ZeroE),
-    .ALUResultEb0   (ALUResultEb0),
+    .FlagE          (FlagE),
     .funct3E        (funct3E),
 
     // From/To Hazard Unit signals/buses
@@ -275,16 +284,17 @@ always_comb begin
     top_ResultSrcD = ResultSrcD;
     top_ALUSrcD = ALUSrcD;
     top_ImmSrcD = ImmSrcD;
+    top_LSTypeD = LSTypeD;
     top_opD = opD;
     top_funct3D = funct3D;
     top_funct7Db5 = funct7Db5;
     top_funct12D = funct12D;
     top_ResultSrcEb0 = ResultSrcEb0;
     top_PCSrcE = PCSrcE;
-    top_ZeroE = ZeroE;
+    top_FlagE = FlagE;
     top_BranchE = BranchE;
     top_JumpE = JumpE;
-    top_ALUResultEb0 = ALUResultEb0;
+    top_JumplrD = JumplrD;
 
     // Hazard Unit Interface
     top_StallF = StallF;

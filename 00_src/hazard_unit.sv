@@ -3,7 +3,8 @@
 module hazard_unit
 (
     input   logic   [4:0]   Rs1D, Rs2D, Rs1E, Rs2E, RdE, RdM, RdW,
-    input   logic           PCSrcE, ResultSrcEb0, RegWriteM, RegWriteW,
+    input   logic           ResultSrcEb0, RegWriteM, RegWriteW,
+    input   logic   [1:0]   PCSrcE,
 
     output  logic           StallF, StallD, FlushD, FlushE,
     output  logic   [1:0]   ForwardAE, ForwardBE
@@ -30,8 +31,8 @@ end
 assign lwStallD = ResultSrcEb0 & ((Rs1D == RdE) | (Rs2D == RdE));   
 assign StallD   = lwStallD; 
 assign StallF   = lwStallD; 
-assign FlushD   = PCSrcE; 
-assign FlushE   = lwStallD | PCSrcE; 
+assign FlushD   = (|PCSrcE); 
+assign FlushE   = lwStallD | (|PCSrcE); 
 
 endmodule:hazard_unit
 
