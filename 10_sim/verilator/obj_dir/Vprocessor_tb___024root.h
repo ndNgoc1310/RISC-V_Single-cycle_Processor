@@ -237,6 +237,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vprocessor_tb___024root final : public Verila
         SData/*12:0*/ processor_tb__DOT__dut__DOT__ctrl__DOT__md__DOT____Vxrand_h8794a91d__0;
         SData/*12:0*/ processor_tb__DOT__dut__DOT__ctrl__DOT__md__DOT____Vxrand_h878f4ebb__0;
         SData/*12:0*/ processor_tb__DOT__dut__DOT__ctrl__DOT__md__DOT__controls;
+        IData/*31:0*/ processor_tb__DOT__top_InstrF;
         IData/*31:0*/ processor_tb__DOT__top_regfile_data;
         IData/*31:0*/ processor_tb__DOT__cycle_count;
         IData/*31:0*/ processor_tb__DOT__fd;
@@ -278,9 +279,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vprocessor_tb___024root final : public Verila
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ALU__DOT__sra1__DOT__shift2;
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ALU__DOT__sra1__DOT__shift3;
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ALU__DOT__sra1__DOT__shift4;
-        IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ALU__DOT__sra1__DOT__shift5;
     };
     struct {
+        IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ALU__DOT__sra1__DOT__shift5;
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__ext__DOT____Vxrand_h8794da3b__0;
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__rf__DOT__rd1;
         IData/*31:0*/ processor_tb__DOT__dut__DOT__dp__DOT__rf__DOT__rd2;
@@ -291,6 +292,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vprocessor_tb___024root final : public Verila
         VlUnpacked<IData/*31:0*/, 256> processor_tb__DOT__im__DOT__IMEM;
         VlUnpacked<CData/*0:0*/, 5> __Vm_traceActivity;
     };
+    std::string processor_tb__DOT__instr_mess;
     VlDelayScheduler __VdlySched;
     VlTriggerScheduler __VtrigSched_hbcaf739d__0;
     VlTriggerVec<1> __VstlTriggered;
