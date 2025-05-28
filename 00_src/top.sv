@@ -58,17 +58,29 @@ module top
     // output logic           top_RegWriteW,
     // output logic [4:0]     top_RdW,
 
+    // // Processor - Instruction Memory
+    // output  logic   [31:0]  top_pcF, top_InstrF,
+
+    // // Processor - Data Memory
+    // output  logic   [31:0]  o_ReadDataM, o_WriteDataM, o_ALUResultM,
+    // output  logic           o_MemWriteM,
+
     // System
     input   logic           clk, rst,
-    output  logic           Ecall, Ebreak,
-
-    // Processor - Instruction Memory
-    output  logic   [31:0]  top_pcF, top_InstrF,
-
-    // Processor - Data Memory
-    output  logic   [31:0]  top_ReadDataM, top_WriteDataM, top_ALUResultM,
-    output  logic           top_MemWriteM
+    output  logic           Ecall, Ebreak
 );
+
+// Processor - Instruction Memory
+logic   [31:0]  top_pcF, top_InstrF;
+
+// Processor - Data Memory
+logic   [31:0]  top_ReadDataM, top_WriteDataM, top_ALUResultM;
+logic           top_MemWriteM;
+
+// assign o_ReadDataM = top_ReadDataM;
+// assign o_WriteDataM = top_WriteDataM;
+// assign o_ALUResultM = top_ALUResultM;
+// assign o_MemWriteM = top_MemWriteM;
 
 processor proc
 (
