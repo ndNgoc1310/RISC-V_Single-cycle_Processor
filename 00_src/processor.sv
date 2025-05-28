@@ -2,61 +2,61 @@
 
 module processor
 (
-    // Debugging Datapath--------
-    // Register File
-    input  logic [4:0]      top_regfile_addr,
-    output logic [31:0]     top_regfile_data,
+    // // Debugging Datapath--------
+    // // Register File
+    // input  logic [4:0]      top_regfile_addr,
+    // output logic [31:0]     top_regfile_data,
 
-    // Fetch Stage (F)
-    output logic [31:0]     top_pcF0, top_PCPlus4F,
+    // // Fetch Stage (F)
+    // output logic [31:0]     top_pcF0, top_PCPlus4F,
 
-    // Decode Stage (D) 
-    output logic [31:0]     top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
-    output logic [31:0]     top_Read1D, top_Read2D,
-    output logic [4:0]      top_RdD,
-    output logic [4:0]      top_LSTypeD,
-    output                  top_JumplrD,
+    // // Decode Stage (D) 
+    // output logic [31:0]     top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
+    // output logic [31:0]     top_Read1D, top_Read2D,
+    // output logic [4:0]      top_RdD,
+    // output logic [4:0]      top_LSTypeD,
+    // output                  top_JumplrD,
 
-    // Execute Stage (E)    
-    output logic [31:0]     top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, 
-                            top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
-    output logic            top_RegWriteE, top_MemWriteE, top_ALUSrcE,
-    output logic [1:0]      top_ResultSrcE, 
-    output logic [3:0]      top_ALUControlE,
+    // // Execute Stage (E)    
+    // output logic [31:0]     top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, 
+    //                         top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
+    // output logic            top_RegWriteE, top_MemWriteE, top_ALUSrcE,
+    // output logic [1:0]      top_ResultSrcE, 
+    // output logic [3:0]      top_ALUControlE,
 
-    // Memory Stage (M) 
-    output logic [31:0]     top_PCPlus4M,
-    output logic [1:0]      top_ResultSrcM,
-    output logic [31:0]     top_ReadDataM_sel,
+    // // Memory Stage (M) 
+    // output logic [31:0]     top_PCPlus4M,
+    // output logic [1:0]      top_ResultSrcM,
+    // output logic [31:0]     top_ReadDataM_sel,
 
-    // Write Back Stage (W)
-    output logic [1:0]      top_ResultSrcW,
-    output logic [31:0]     top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW,
+    // // Write Back Stage (W)
+    // output logic [1:0]      top_ResultSrcW,
+    // output logic [31:0]     top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW,
     
-    // Internal - Controller Interface
-    output logic           top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD, top_ALUSrcD,
-    output logic [3:0]     top_ALUControlD,
-    output logic [1:0]     top_ResultSrcD, 
-    output logic [2:0]     top_ImmSrcD,
-    output logic [6:0]     top_opD,
-    output logic [2:0]     top_funct3D,
-    output logic           top_funct7Db5,
-    output logic [11:0]    top_funct12D,
-    output logic           top_ResultSrcEb0,
-    output logic [1:0]     top_PCSrcE,
-    output logic           top_BranchE, top_JumpE,
-    output logic [3:0]     top_FlagE, // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
+    // // Internal - Controller Interface
+    // output logic           top_RegWriteD, top_MemWriteD, top_JumpD, top_BranchD, top_ALUSrcD,
+    // output logic [3:0]     top_ALUControlD,
+    // output logic [1:0]     top_ResultSrcD, 
+    // output logic [2:0]     top_ImmSrcD,
+    // output logic [6:0]     top_opD,
+    // output logic [2:0]     top_funct3D,
+    // output logic           top_funct7Db5,
+    // output logic [11:0]    top_funct12D,
+    // output logic           top_ResultSrcEb0,
+    // output logic [1:0]     top_PCSrcE,
+    // output logic           top_BranchE, top_JumpE,
+    // output logic [3:0]     top_FlagE, // Flag = {Ovf, Carry, Neg, Zero} (Overflow, Carry, Negative, Zero)
 
-    // Internal - Hazard Unit Interface
-    output logic           top_StallF,
-    output logic           top_StallD, top_FlushD,
-    output logic [4:0]     top_Rs1D, top_Rs2D,
-    output logic           top_FlushE,
-    output logic [1:0]     top_ForwardAE, top_ForwardBE,
-    output logic [4:0]     top_Rs1E, top_Rs2E, top_RdE,
-    output logic           top_RegWriteM,
-    output logic [4:0]     top_RdM, top_RdW,
-    output logic           top_RegWriteW,
+    // // Internal - Hazard Unit Interface
+    // output logic           top_StallF,
+    // output logic           top_StallD, top_FlushD,
+    // output logic [4:0]     top_Rs1D, top_Rs2D,
+    // output logic           top_FlushE,
+    // output logic [1:0]     top_ForwardAE, top_ForwardBE,
+    // output logic [4:0]     top_Rs1E, top_Rs2E, top_RdE,
+    // output logic           top_RegWriteM,
+    // output logic [4:0]     top_RdM, top_RdW,
+    // output logic           top_RegWriteW,
 
     //----------------------------
     // System signals
@@ -145,46 +145,46 @@ controller ctrl
 
 data_path dp
 (
-    // Debugging---------
-    .top_regfile_addr   (top_regfile_addr),
-    .top_regfile_data   (top_regfile_data),
+    // // Debugging---------
+    // .top_regfile_addr   (top_regfile_addr),
+    // .top_regfile_data   (top_regfile_data),
 
-    .top_pcF0          (top_pcF0),
-    .top_PCPlus4F      (top_PCPlus4F),
+    // .top_pcF0          (top_pcF0),
+    // .top_PCPlus4F      (top_PCPlus4F),
     
-    .top_InstrD        (top_InstrD),
-    .top_pcD           (top_pcD),
-    .top_ImmExtD       (top_ImmExtD),
-    .top_PCPlus4D      (top_PCPlus4D),
-    .top_Read1D        (top_Read1D),
-    .top_Read2D        (top_Read2D),
-    .top_RdD           (top_RdD),
+    // .top_InstrD        (top_InstrD),
+    // .top_pcD           (top_pcD),
+    // .top_ImmExtD       (top_ImmExtD),
+    // .top_PCPlus4D      (top_PCPlus4D),
+    // .top_Read1D        (top_Read1D),
+    // .top_Read2D        (top_Read2D),
+    // .top_RdD           (top_RdD),
     
-    .top_Read1E        (top_Read1E),
-    .top_Read2E        (top_Read2E),
-    .top_pcE           (top_pcE),
-    .top_ImmExtE       (top_ImmExtE),
-    .top_PCPlus4E      (top_PCPlus4E),
-    .top_PCTargetE     (top_PCTargetE),
-    .top_SrcAE         (top_SrcAE),
-    .top_SrcBE         (top_SrcBE),
-    .top_ALUResultE    (top_ALUResultE),
-    .top_WriteDataE    (top_WriteDataE),
-    .top_RegWriteE     (top_RegWriteE),
-    .top_MemWriteE     (top_MemWriteE),
-    .top_ResultSrcE    (top_ResultSrcE),
-    .top_ALUSrcE       (top_ALUSrcE),
-    .top_ALUControlE   (top_ALUControlE),
+    // .top_Read1E        (top_Read1E),
+    // .top_Read2E        (top_Read2E),
+    // .top_pcE           (top_pcE),
+    // .top_ImmExtE       (top_ImmExtE),
+    // .top_PCPlus4E      (top_PCPlus4E),
+    // .top_PCTargetE     (top_PCTargetE),
+    // .top_SrcAE         (top_SrcAE),
+    // .top_SrcBE         (top_SrcBE),
+    // .top_ALUResultE    (top_ALUResultE),
+    // .top_WriteDataE    (top_WriteDataE),
+    // .top_RegWriteE     (top_RegWriteE),
+    // .top_MemWriteE     (top_MemWriteE),
+    // .top_ResultSrcE    (top_ResultSrcE),
+    // .top_ALUSrcE       (top_ALUSrcE),
+    // .top_ALUControlE   (top_ALUControlE),
     
-    .top_PCPlus4M      (top_PCPlus4M),
-    .top_ResultSrcM    (top_ResultSrcM),
-    .top_ReadDataM_sel (top_ReadDataM_sel),
+    // .top_PCPlus4M      (top_PCPlus4M),
+    // .top_ResultSrcM    (top_ResultSrcM),
+    // .top_ReadDataM_sel (top_ReadDataM_sel),
     
-    .top_ResultSrcW    (top_ResultSrcW),
-    .top_ALUResultW    (top_ALUResultW),
-    .top_ReadDataW     (top_ReadDataW),
-    .top_PCPlus4W      (top_PCPlus4W),
-    .top_ResultW       (top_ResultW),
+    // .top_ResultSrcW    (top_ResultSrcW),
+    // .top_ALUResultW    (top_ALUResultW),
+    // .top_ReadDataW     (top_ReadDataW),
+    // .top_PCPlus4W      (top_PCPlus4W),
+    // .top_ResultW       (top_ResultW),
     
     // System signals
     .clk            (clk),
@@ -273,46 +273,46 @@ assign top_MemWriteM = MemWriteM;
 assign top_ALUResultM = ALUResultM;
 assign top_WriteDataM = WriteDataM;
 
-// Debugging (Internal signals)
-always_comb begin
-    // Controller Interface
-    top_RegWriteD = RegWriteD;
-    top_MemWriteD = MemWriteD;
-    top_JumpD = JumpD;
-    top_BranchD = BranchD;
-    top_ALUControlD = ALUControlD;
-    top_ResultSrcD = ResultSrcD;
-    top_ALUSrcD = ALUSrcD;
-    top_ImmSrcD = ImmSrcD;
-    top_LSTypeD = LSTypeD;
-    top_opD = opD;
-    top_funct3D = funct3D;
-    top_funct7Db5 = funct7Db5;
-    top_funct12D = funct12D;
-    top_ResultSrcEb0 = ResultSrcEb0;
-    top_PCSrcE = PCSrcE;
-    top_FlagE = FlagE;
-    top_BranchE = BranchE;
-    top_JumpE = JumpE;
-    top_JumplrD = JumplrD;
+// // Debugging (Internal signals)
+// always_comb begin
+//     // Controller Interface
+//     top_RegWriteD = RegWriteD;
+//     top_MemWriteD = MemWriteD;
+//     top_JumpD = JumpD;
+//     top_BranchD = BranchD;
+//     top_ALUControlD = ALUControlD;
+//     top_ResultSrcD = ResultSrcD;
+//     top_ALUSrcD = ALUSrcD;
+//     top_ImmSrcD = ImmSrcD;
+//     top_LSTypeD = LSTypeD;
+//     top_opD = opD;
+//     top_funct3D = funct3D;
+//     top_funct7Db5 = funct7Db5;
+//     top_funct12D = funct12D;
+//     top_ResultSrcEb0 = ResultSrcEb0;
+//     top_PCSrcE = PCSrcE;
+//     top_FlagE = FlagE;
+//     top_BranchE = BranchE;
+//     top_JumpE = JumpE;
+//     top_JumplrD = JumplrD;
 
-    // Hazard Unit Interface
-    top_StallF = StallF;
-    top_StallD = StallD;
-    top_FlushD = FlushD;
-    top_Rs1D = Rs1D;
-    top_Rs2D = Rs2D;
-    top_FlushE = FlushE;
-    top_ForwardAE = ForwardAE;
-    top_ForwardBE = ForwardBE;
-    top_Rs1E = Rs1E;
-    top_Rs2E = Rs2E;
-    top_RdE = RdE;
-    top_RegWriteM = RegWriteM;
-    top_RdM = RdM;
-    top_RegWriteW = RegWriteW;
-    top_RdW = RdW;
-end
+//     // Hazard Unit Interface
+//     top_StallF = StallF;
+//     top_StallD = StallD;
+//     top_FlushD = FlushD;
+//     top_Rs1D = Rs1D;
+//     top_Rs2D = Rs2D;
+//     top_FlushE = FlushE;
+//     top_ForwardAE = ForwardAE;
+//     top_ForwardBE = ForwardBE;
+//     top_Rs1E = Rs1E;
+//     top_Rs2E = Rs2E;
+//     top_RdE = RdE;
+//     top_RegWriteM = RegWriteM;
+//     top_RdM = RdM;
+//     top_RegWriteW = RegWriteW;
+//     top_RdW = RdW;
+// end
 
 endmodule:processor
 

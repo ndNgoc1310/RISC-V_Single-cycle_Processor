@@ -2,9 +2,9 @@
 
 module reg_file
 (
-    // Debugging: Add debug ports
-    input  logic [4:0]  top_regfile_addr,
-    output logic [31:0] top_regfile_data,
+    // // Debugging: Add debug ports
+    // input  logic [4:0]  top_regfile_addr,
+    // output logic [31:0] top_regfile_data,
     
     input   logic   clk, rst,
     input   logic   [4:0] i_rd_addr_0, i_rd_addr_1,
@@ -37,14 +37,16 @@ end
 // write occurs on falling edge of clock 
 // register 0 hardwired to 0 
  
-always_ff @(negedge clk) 
+always_ff @(posedge clk) 
     if (we3) REGFILE[a3] <= wd3;  
- 
-assign rd1 = (a1 != 0) ? REGFILE[a1] : 0; 
-assign rd2 = (a2 != 0) ? REGFILE[a2] : 0; 
 
-// Debugging
-assign top_regfile_data = (top_regfile_addr != 0) ? REGFILE[top_regfile_addr] : 0;
+always_ff @(negedge clk) begin
+    rd1 <= (a1 != 0) ? REGFILE[a1] : 0; 
+    rd2 <= (a2 != 0) ? REGFILE[a2] : 0; 
+end
+
+// // Debugging
+// assign top_regfile_data = (top_regfile_addr != 0) ? REGFILE[top_regfile_addr] : 0;
 
 endmodule  
 

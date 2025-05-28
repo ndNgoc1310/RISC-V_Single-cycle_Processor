@@ -2,33 +2,33 @@
 
 module data_path
 (
-    // Debugging-----
-    // Register File
-    input   logic [4:0]  top_regfile_addr,
-    output  logic [31:0] top_regfile_data,
+    // // Debugging-----
+    // // Register File
+    // input   logic [4:0]  top_regfile_addr,
+    // output  logic [31:0] top_regfile_data,
     
-    // Fetch Stage (F)
-    output  logic   [31:0]  top_pcF0, top_PCPlus4F,
+    // // Fetch Stage (F)
+    // output  logic   [31:0]  top_pcF0, top_PCPlus4F,
 
-    // Decode Stage (D)
-    output  logic   [31:0]  top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
-    output  logic   [31:0]  top_Read1D, top_Read2D,
-    output  logic   [4:0]   top_RdD,
+    // // Decode Stage (D)
+    // output  logic   [31:0]  top_InstrD, top_pcD, top_ImmExtD, top_PCPlus4D,
+    // output  logic   [31:0]  top_Read1D, top_Read2D,
+    // output  logic   [4:0]   top_RdD,
 
-    // Execute Stage (E)
-    output  logic   [31:0]  top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
-    output  logic           top_RegWriteE, top_MemWriteE, top_ALUSrcE,
-    output  logic   [1:0]   top_ResultSrcE, 
-    output  logic   [3:0]   top_ALUControlE,
+    // // Execute Stage (E)
+    // output  logic   [31:0]  top_Read1E, top_Read2E, top_pcE, top_ImmExtE, top_PCPlus4E, top_PCTargetE, top_SrcAE, top_SrcBE, top_ALUResultE, top_WriteDataE,
+    // output  logic           top_RegWriteE, top_MemWriteE, top_ALUSrcE,
+    // output  logic   [1:0]   top_ResultSrcE, 
+    // output  logic   [3:0]   top_ALUControlE,
  
-    // Memory Stage (M)
-    output  logic   [31:0]  top_PCPlus4M,
-    output  logic   [1:0]   top_ResultSrcM,
-    output  logic   [31:0]  top_ReadDataM_sel,
+    // // Memory Stage (M)
+    // output  logic   [31:0]  top_PCPlus4M,
+    // output  logic   [1:0]   top_ResultSrcM,
+    // output  logic   [31:0]  top_ReadDataM_sel,
  
-    // Write Back Stage (W)
-    output  logic   [1:0]   top_ResultSrcW,
-    output  logic   [31:0]  top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW, 
+    // // Write Back Stage (W)
+    // output  logic   [1:0]   top_ResultSrcW,
+    // output  logic   [31:0]  top_ALUResultW, top_ReadDataW, top_PCPlus4W, top_ResultW, 
 
     // System signals
     input   logic           clk, rst,
@@ -273,9 +273,9 @@ extender ext
 // Register File
 reg_file rf
 (
-    // Output to top level
-    .top_regfile_addr   (top_regfile_addr),
-    .top_regfile_data   (top_regfile_data),
+    // // Debugging: Output to top level
+    // .top_regfile_addr   (top_regfile_addr),
+    // .top_regfile_data   (top_regfile_data),
 
     .clk            (clk),
     .rst            (rst),
@@ -288,51 +288,51 @@ reg_file rf
     .o_rd_dat_1     (Read2D)
 );
 
-// Debugging---------------
-// Debug signal assignments
-always_comb begin
-    // Fetch Stage
-    top_pcF0 = pcF0;
-    top_PCPlus4F = PCPlus4F;
+// // Debugging---------------
+// // Debug signal assignments
+// always_comb begin
+//     // Fetch Stage
+//     top_pcF0 = pcF0;
+//     top_PCPlus4F = PCPlus4F;
 
-    // Decode Stage
-    top_InstrD = InstrD;
-    top_pcD = pcD;
-    top_ImmExtD = ImmExtD;
-    top_PCPlus4D = PCPlus4D;
-    top_Read1D = Read1D;
-    top_Read2D = Read2D;
-    top_RdD = RdD;
+//     // Decode Stage
+//     top_InstrD = InstrD;
+//     top_pcD = pcD;
+//     top_ImmExtD = ImmExtD;
+//     top_PCPlus4D = PCPlus4D;
+//     top_Read1D = Read1D;
+//     top_Read2D = Read2D;
+//     top_RdD = RdD;
 
-    // Execute Stage
-    top_Read1E = Read1E;
-    top_Read2E = Read2E;
-    top_pcE = pcE;
-    top_ImmExtE = ImmExtE;
-    top_PCPlus4E = PCPlus4E;
-    top_PCTargetE = PCTargetE;
-    top_SrcAE = SrcAE;
-    top_SrcBE = SrcBE;
-    top_ALUResultE = ALUResultE;
-    top_WriteDataE = WriteDataE;
-    top_RegWriteE = RegWriteE;
-    top_MemWriteE = MemWriteE;
-    top_ResultSrcE = ResultSrcE;
-    top_ALUSrcE = ALUSrcE;
-    top_ALUControlE = ALUControlE;
+//     // Execute Stage
+//     top_Read1E = Read1E;
+//     top_Read2E = Read2E;
+//     top_pcE = pcE;
+//     top_ImmExtE = ImmExtE;
+//     top_PCPlus4E = PCPlus4E;
+//     top_PCTargetE = PCTargetE;
+//     top_SrcAE = SrcAE;
+//     top_SrcBE = SrcBE;
+//     top_ALUResultE = ALUResultE;
+//     top_WriteDataE = WriteDataE;
+//     top_RegWriteE = RegWriteE;
+//     top_MemWriteE = MemWriteE;
+//     top_ResultSrcE = ResultSrcE;
+//     top_ALUSrcE = ALUSrcE;
+//     top_ALUControlE = ALUControlE;
 
-    // Memory Stage
-    top_PCPlus4M = PCPlus4M;
-    top_ResultSrcM = ResultSrcM;
-    top_ReadDataM_sel = ReadDataM_sel;
+//     // Memory Stage
+//     top_PCPlus4M = PCPlus4M;
+//     top_ResultSrcM = ResultSrcM;
+//     top_ReadDataM_sel = ReadDataM_sel;
 
-    // Write Back Stage
-    top_ResultSrcW = ResultSrcW;
-    top_ALUResultW = ALUResultW;
-    top_ReadDataW = ReadDataW;
-    top_PCPlus4W = PCPlus4W;
-    top_ResultW = ResultW;
-end
+//     // Write Back Stage
+//     top_ResultSrcW = ResultSrcW;
+//     top_ALUResultW = ALUResultW;
+//     top_ReadDataW = ReadDataW;
+//     top_PCPlus4W = PCPlus4W;
+//     top_ResultW = ResultW;
+// end
 
 endmodule:data_path
 
