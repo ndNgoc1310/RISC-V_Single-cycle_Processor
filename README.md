@@ -1,62 +1,52 @@
-# CapstoneProject1 – Dual-Issue RV32I CPU (Aqua Architecture) & TileLink Integration
+# Capstone Project 1 — RV32I Pipelined Processor Design
 
-## 📌 Project Overview
+## 👤 Author
+**Nguyễn Duy Ngọc**  
+Vietnam Nation University - Ho Chi Minh City (VNU-HCM) - University of Technology (HCMUT)
+Faculty of Electrical and Electronic Engineering - Department of Electronics Engineering
 
-This project is a personal exploration and extension beyond the completed group CPU design. It consists of two parallel tracks:
+## 📄 Project Summary
+This project focuses on the design, implementation, simulation, and synthesis of a 5-stage pipelined processor conforming to the base RV32I Instruction Set Architecture (ISA). The design is verified using a comprehensive set of test programs, including hazard handling (stall and flush), and synthesized using Quartus Prime.
 
-1. **Redesign a RISC-V RV32I CPU with Dual-Issue support**, based on the Aqua v0.2 architecture, with out-of-order execution using a centralized scheduler and multiple functional units.
-2. **Study and implement TileLink (TL-UL and TL-UH)** protocol, and integrate a TileLink slave interface into the previously completed team CPU, enabling peripheral or memory-mapped device communication.
+## 📚 References
+- D. Harris and S. Harris, *Digital Design and Computer Architecture*, Morgan Kaufmann, 2012.
+- D. A. Patterson and J. L. Hennessy, *Computer Organization and Design RISC-V Edition: The Hardware Software Interface*, Morgan Kaufmann, 2017.
+- RISC-V Foundation, *The RISC-V Instruction Set Manual, Volume I: Unprivileged Architecture*, Version 20250508.
 
----
-
-## 🧱 Architecture Summary (Track 1 – CPU Aqua v0.2 Inspired)
-
-- **ISA**: RV32I  
-  (Minimal RISC-V instruction set: arithmetic, logic, load/store, branches, jumps)
-- **Execution**: Dual-Issue, pipelined, with out-of-order issue and execution
-
-### 🧠 Key Architectural Units:
-- **Frontend**
-  - G-share Branch Predictor
-  - 3-entry Fetch Buffer
-  - Dual Instruction Decoders
-- **Mid-stage**
-  - 32-entry Decode Queue
-  - Central Scheduler
-  - Instruction Arbitrator
-- **Backend**
-  - ALU (Arithmetic/Logic Unit)
-  - BRU (Branch Unit)
-  - AGU (Address Generation Unit)
-  - LSU (Load/Store Unit)
-- **Others**
-  - Register File with multiple write ports
-  - Forwarding Unit to minimize stalls
-
----
-
-## 🔌 TileLink Study & Integration (Track 2)
-
-- **Objective**: Design a minimal TileLink slave interface to interact with external components (e.g., memory, peripherals)
-- **Protocol**: TileLink UL (Uncached Lightweight) and UH (Uncached Heavyweight)
-- **Integration**: Connect TileLink slave interface to group-designed CPU's bus system, enabling memory-mapped control
-
----
-
-## 📂 Directory Structure
-
-```bash
+## 📁 Project Structure
+```
 CapstoneProject1/
-├── 00_src/              # Aqua dual-issue CPU RTL (SystemVerilog)
-├── 01_bench/            # Testbenches for simulation
-├── 02_include/          # Shared definitions: ISA opcodes, TL signals, structs
-├── 03_tilelink/         # TileLink modules (slave interface, bus fabric)
-├── 10_sim/
-│   ├── verilator/       # Verilator scripts and C++ test integration
-│   ├── vcs/             # VCS simulation setup
-│   └── xcelium/         # Xcelium simulation setup
-├── 90_docs/             # Design notes, block diagrams, protocol docs
-├── 91_scripts/          # Automation scripts (build/run/report)
-├── README.md            # Project description (this file)
-├── TODO.md              # Task breakdown & timeline
-└── .gitignore
+│
+├── 00_src/                  # RTL modules (Verilog)
+├── 01_bench/                # Testbenches
+├── 10_sim/                  # Simulation results
+├── 20_syn/                  # Synthesis files (Quartus Prime)
+│   └── quartus              # Quartus Prime│
+├── 90_docs/                 # Documentation
+├── 91_scripts/              # Automated scripts
+├── 92_report/               # Final report
+├── 99_ref/                  # References
+└── README.md                # This file
+```
+
+## 🧪 Verification and Simulation
+- 156 test instructions executed to verify all 39 RV32I instruction types.
+- Simulated using Verilator, logs captured in `sim_rslt.sv`.
+- Testbench: `processor_tb.sv` (cycle-accurate analysis).
+- Functional coverage includes:
+  - Data hazards (RAW) with stall and forwarding
+  - Control hazards with flushing
+  - Load-use hazard with stall insertion
+
+## 🧮 Synthesis
+- Synthesized using Intel Quartus Prime.
+- Netlist views and utilization reports provided for top-level and submodules.
+
+## 🔮 Conclusion and Future Work
+This processor implementation successfully achieves functional correctness and synthesizability for the RV32I ISA. Future enhancements may include:
+- Support for RV32IC (compressed instructions)
+- Integration of branch prediction and dual-issue pipeline
+- Extension toward full SoC integration with peripheral I/O
+
+## 🌐 Repository Link
+[https://gitlab.com/duyngoc131004/CapstoneProject1](https://gitlab.com/duyngoc131004/CapstoneProject1)
