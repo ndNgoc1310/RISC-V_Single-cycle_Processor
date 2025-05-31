@@ -344,6 +344,35 @@ logic   [31:0]  IMEM [255:0];
 /* 157 */       assign IMEM[32'h9B] = 32'h0421a023;  // sw x2, 0x40(x3)     # mem[652] = 0xABCDE02E     /* 160 */
 /* 158 */       assign IMEM[32'h9C] = 32'hFFDFF06F;  // jal x0, -4          # infinite loop             /* 160 */                      
 
+// // Test Program from Textbook
+// /* 0 */        assign IMEM[32'h00] = 32'h00500113;  // addi x2, x0, 5      # x2 = 5                /* 4 */
+// /* 1 */        assign IMEM[32'h01] = 32'h00C00193;  // addi x3, x0, 12     # x3 = 12               /* 5 */
+// /* 2 */        assign IMEM[32'h02] = 32'hFF718393;  // addi x7, x3, -9     # x7 = (12 - 9) = 3     /* 6 */
+// /* 3 */        assign IMEM[32'h03] = 32'h0023E233;  // or x4, x7, x2       # x4 = (3 OR 5) = 7     /* 7 */
+// /* 4 */        assign IMEM[32'h04] = 32'h0041C2B3;  // xor x5, x3, x4      # x5 = (12 XOR 7) = 11  /* 8 */
+// /* 5 */        assign IMEM[32'h05] = 32'h004282B3;  // add x5, x5, x4      # x5 = (11 + 7) = 18    /* 9 */
+// /* 6 */        assign IMEM[32'h06] = 32'h02728863;  // beq x5, x7, end     # shouldn't be taken    /* 8 */
+// /* 7 */        assign IMEM[32'h07] = 32'h0041A233;  // slt x4, x3, x4      # x4 = (12 < 7) = 0     /* 11 */
+// /* 8 */        assign IMEM[32'h08] = 32'h00020463;  // beq x4, x0, around  # should be taken       /* 12 */                   
+// /* 9 */        assign IMEM[32'h09] = 32'h00000293;  // addi x5, x0, 0      # NOP (will be flushed)                                                     
+// /* 10-11 */    assign IMEM[32'h0A] = 32'h0023A233;  // slt x4, x7, x2      # x4 = (3 < 5) = 1 (will be flushed -> jump here)   /* 15 */                           
+// /* 12 */       assign IMEM[32'h0B] = 32'h005203B3;  // add x7, x4, x5      # x7 = (1 + 18) = 19    /* 145 */          
+// /* 13 */       assign IMEM[32'h0C] = 32'h402383B3;  // sub x7, x7, x2      # x7 = (19 - 5) = 14    /* 146 */
+// /* 14 */       assign IMEM[32'h0D] = 32'h0471AA23;  // sw x7, 84(x3)       # [96] = 14             /* 146 */
+// /* 15 */       assign IMEM[32'h0E] = 32'h06002103;  // lw x2, 96(x0)       # x2 = [96] = 14                                /* 148 */
+// /* 16 */       assign IMEM[32'h0F] = 32'h005104B3;  // add x9, x2, x5      # x9 = (14 + 18) = 32  (stall for 1 stage)      /* 150 */
+// /* 17 */       assign IMEM[32'h10] = 32'h008001EF;  // jal x3, end         # jump to end, x3 = 0x44 (stall for 1 stage)    /* 149-151 */
+// /* 18 */       assign IMEM[32'h11] = 32'h00100113;  // addi x2, x0, 1      # NOP (will be flushed) 
+// /* 19-21 */    assign IMEM[32'h12] = 32'h00910133;  // add x2, x2, x9      # x2 = (14 + 32) = 46 (will be flushed -> jump here)    /* 154 */     
+// /* 22 */       assign IMEM[32'h13] = 32'h00100213;  // addi x4, x0, 1      # x4 = 1                    /* 155 */
+// /* 23 */       assign IMEM[32'h14] = 32'h800002B7;  // lui x5, 0x80000     # x5 = 0x80000000           /* 156 */
+// /* 24 */       assign IMEM[32'h15] = 32'h0042A333;  // slt x6, x5, x4      # x6 = 1                    /* 157 */
+// /* 25 */       assign IMEM[32'h16] = 32'h00030063;  // beq x6, x0, wrong   # shouldn't be taken        /* 156 */
+// /* 26 */       assign IMEM[32'h17] = 32'hABCDE4B7;  // lui x9, 0xABCDE     # x9 = 0xABCDE000           /* 159 */
+// /* 27 */       assign IMEM[32'h18] = 32'h00910133;  // add x2, x2, x9      # x2 = 0xABCDE02E           /* 160 */
+// /* 28 */       assign IMEM[32'h19] = 32'h0421a023;  // sw x2, 0x40(x3)     # mem[652] = 0xABCDE02E     /* 160 */
+// /* 29 */       assign IMEM[32'h1A] = 32'h00210063;  //                     # infinite loop             /* 160 */                
+
 // Load data from import file
 // initial
 //     $readmemh("test_prog.mif", IMEM);
