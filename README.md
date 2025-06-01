@@ -49,5 +49,5 @@ This processor implementation successfully achieves functional correctness and s
 - Extension toward full SoC integration with peripheral I/O
 
 ## 🌐 Repository Link
-https://gitlab.com/duyngoc131004/CapstoneProject1
-https://github.com/ndNgoc1310/CapstoneProject1
+- GitLab: https://gitlab.com/duyngoc131004/CapstoneProject1
+- GitHub: https://github.com/ndNgoc1310/CapstoneProject1
