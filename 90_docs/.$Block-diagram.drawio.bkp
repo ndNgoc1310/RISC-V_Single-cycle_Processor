@@ -1,0 +1,37 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Page-1" id="2K-5gUlrx1Mslb_4f0jU">
+    <mxGraphModel dx="689" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-1" value="Instruction&lt;div&gt;Memory&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1880" y="1520" width="240" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2280" y="1520" width="80" height="800" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-3" value="Register&lt;div&gt;File&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2520" y="1520" width="320" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-4" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="1520" width="80" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-5" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="3000" y="1120" width="80" height="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-6" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="3520" y="1120" width="80" height="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-7" value="Data&lt;div&gt;Memory&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="3790" y="1540" width="240" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-8" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="4160" y="1120" width="80" height="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="S4XLAByEaEKLQbHEeNvy-9" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="1400.31" y="1559.69" width="120" height="40.62" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
