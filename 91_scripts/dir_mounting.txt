@@ -3,3 +3,12 @@ vmhgfs-fuse .host:/[Name of Directory at Window] ~/[Name of Mounted Directory] -
 
 # Add those lines to .bashrc to auto-mount at reboot: 
 nano ~/.bashrc
+
+mkdir -p ~/CapstoneProject1
+vmhgfs-fuse .host:/CapstoneProject1 ~/CapstoneProject1 -o umask=0033
+
+mkdir -p ~/CapstoneProject2
+vmhgfs-fuse .host:/CapstoneProject2 ~/CapstoneProject2 -o umask=0033
+
+mkdir -p ~/RISC-V_Single-cycle_Processor
+vmhgfs-fuse .host:/RISC-V_Single-cycle_Processor ~/RISC-V_Single-cycle_Processor -o umask=0033

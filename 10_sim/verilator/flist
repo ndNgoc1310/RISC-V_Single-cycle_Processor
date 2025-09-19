@@ -35,11 +35,12 @@
 # ./../../01_bench/controller_tb.sv
 # ./../../01_bench/D_stage_tb.sv
 # ./../../01_bench/processor_tb.sv
-# ./../../01_bench/top_tb.sv
+ ./../../01_bench/top_tb.sv
 
 
 ./conf.vlt
--top top
+-top top_tb
+
 
 
 

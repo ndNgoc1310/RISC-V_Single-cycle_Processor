@@ -1,0 +1,5 @@
+# Install
+sudo dnf install -y verilator
+
+# Check
+verilator --version

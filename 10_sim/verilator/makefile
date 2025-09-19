@@ -1,4 +1,4 @@
-TOP=top
+TOP=top_tb
 SEED=1
 
 all: clean lint sim
@@ -40,7 +40,6 @@ sim:
 
 .PHONY: wave
 wave:
-
 	@if [ -f wave.vcd ]; then \
 		echo ""; \
 		echo "📊 Launching GTKWave..."; \
@@ -54,5 +53,7 @@ wave:
 .PHONY: clean
 clean:
 	@echo "" && echo "🧹 [CLEAN] Cleaning build and waveform files..."
-	@rm -rf ./obj_dir *.vcd *.gtkw *.txt
+	@rm -rf ./obj_dir *.vcd *.txt
+
+
 

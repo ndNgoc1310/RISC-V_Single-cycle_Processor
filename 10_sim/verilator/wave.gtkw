@@ -1,0 +1,63 @@
+[*]
+[*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
+[*] Fri Sep 19 19:44:49 2025
+[*]
+[dumpfile] "/home/admin/RISC-V_Single-cycle_Processor/10_sim/verilator/wave.vcd"
+[dumpfile_mtime] "Fri Sep 19 19:12:20 2025"
+[dumpfile_size] 571078
+[savefile] "/home/admin/RISC-V_Single-cycle_Processor/10_sim/verilator/wave.gtkw"
+[timestart] 0
+[size] 1920 979
+[pos] -1 -1
+*-13.883418 15490 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.top_tb.
+[treeopen] TOP.top_tb.dut.
+[treeopen] TOP.top_tb.dut.proc.
+[treeopen] TOP.top_tb.dut.proc.dp.
+[sst_width] 240
+[signals_width] 198
+[sst_expanded] 1
+[sst_vpaned_height] 274
+@28
+[color] 2
+TOP.top_tb.clk
+@29
+[color] 2
+TOP.top_tb.rst
+@22
+[color] 2
+TOP.top_tb.cycle_count[31:0]
+TOP.top_tb.dut.proc.dp.pc0[31:0]
+TOP.top_tb.dut.proc.dp.pc[31:0]
+TOP.top_tb.dut.proc.dp.PCPlus4[31:0]
+TOP.top_tb.dut.proc.dp.Instr[31:0]
+TOP.top_tb.dut.proc.dp.SrcA[31:0]
+TOP.top_tb.dut.proc.dp.Read2[31:0]
+TOP.top_tb.dut.proc.dp.ImmExt[31:0]
+TOP.top_tb.dut.proc.dp.SrcB[31:0]
+TOP.top_tb.dut.proc.dp.PCTarget[31:0]
+TOP.top_tb.dut.proc.dp.ALUResult[31:0]
+TOP.top_tb.dut.proc.dp.Flag[3:0]
+@28
+[color] 1
+TOP.top_tb.dut.proc.ctrl.RegWrite
+[color] 1
+TOP.top_tb.dut.proc.ctrl.MemWrite
+[color] 1
+TOP.top_tb.dut.proc.ctrl.ALUControl[3:0]
+[color] 1
+TOP.top_tb.dut.proc.ctrl.ALUSrc
+[color] 1
+TOP.top_tb.dut.proc.ctrl.ImmSrc[2:0]
+[color] 1
+TOP.top_tb.dut.proc.ctrl.LSType[4:0]
+[color] 1
+TOP.top_tb.dut.proc.ctrl.PCSrc[1:0]
+@22
+TOP.top_tb.dut.proc.dp.WriteData[31:0]
+TOP.top_tb.dut.proc.dp.ReadData[31:0]
+TOP.top_tb.dut.proc.dp.ReadData_result[31:0]
+TOP.top_tb.dut.proc.dp.Result[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

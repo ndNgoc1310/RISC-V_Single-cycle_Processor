@@ -1,0 +1,6 @@
+# For CentOS7:
+sudo yum install -y epel-release
+sudo yum install -y gtkwave
+
+# For Fedora:
+sudo dnf install -y gtkwave
