@@ -28,13 +28,6 @@ lint:
 
 .PHONY: sim
 sim:
-# 	@echo "-> SIMULATION"
-# 	verilator $(FLAGS) $(TARGET)
-
-# 	@echo "-> SIMULATION"
-# 	verilator --cc $(FLAGS) $(TARGET) --exe top.cpp
-# 	@make -C obj_dir -f V$(TOP).mk V$(TOP)
-
 	@echo "" && echo "🚀 [SIM] Building simulation & Executing testbench..."
 	@echo ""
 	verilator --binary $(FLAGS) $(TARGET)
@@ -47,7 +40,6 @@ sim:
 
 .PHONY: wave
 wave:
-# 	gtkwave wave.vcd wave.gtkw 2>/dev/null
 
 	@if [ -f wave.vcd ]; then \
 		echo ""; \
@@ -63,21 +55,4 @@ wave:
 clean:
 	@echo "" && echo "🧹 [CLEAN] Cleaning build and waveform files..."
 	@rm -rf ./obj_dir *.vcd *.gtkw *.txt
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

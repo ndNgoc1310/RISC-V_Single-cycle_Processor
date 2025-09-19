@@ -11,7 +11,6 @@
 ./../../00_src/eu.sv
 ./../../00_src/extender.sv
 ./../../00_src/flop_r.sv
-./../../00_src/hazard_unit.sv
 ./../../00_src/i_mem.sv
 ./../../00_src/lsu.sv
 ./../../00_src/main_dec.sv

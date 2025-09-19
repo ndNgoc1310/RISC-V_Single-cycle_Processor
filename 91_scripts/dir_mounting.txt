@@ -1,0 +1,5 @@
+mkdir -p ~/[Name of Mounted Directory]
+vmhgfs-fuse .host:/[Name of Directory at Window] ~/[Name of Mounted Directory] -o umask=0033
+
+# Add those lines to .bashrc to auto-mount at reboot: 
+nano ~/.bashrc

@@ -1,0 +1,2 @@
+Warning (10273): Verilog HDL warning at extender.sv(25): extended using "x" or "z" File: C:/RISC-V_Single-cycle_Processor_Quartus/top/00_src/extender.sv Line: 25
+Info (10281): Verilog HDL Declaration information at data_path.sv(35): object "PCPlus4" differs only in case from object "PCplus4" in the same scope File: C:/RISC-V_Single-cycle_Processor_Quartus/top/00_src/data_path.sv Line: 35
